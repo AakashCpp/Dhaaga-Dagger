@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
+import { UiSelect } from './UiSelect';
 import { Product, products } from '../data/products';
 
 interface ProductGridProps {
@@ -87,17 +88,19 @@ export default function ProductGrid({ title, category, onAddToCart, onViewProduc
             <div className="ml-auto flex items-center gap-7">
               <span className="hidden text-[13px] text-black/80 md:inline">{filteredProducts.length * 10 - 8} products</span>
               <label className="text-[13px] text-black/70">Sort by:</label>
-            <select
+            <UiSelect
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent text-[13px] outline-none cursor-pointer"
-            >
-              <option value="featured">Featured</option>
-              <option value="price-low">Price, low to high</option>
-              <option value="price-high">Price, high to low</option>
-              <option value="date-old">Date, old to new</option>
-              <option value="date-new">Date, new to old</option>
-            </select>
+              onChange={setSortBy}
+              ariaLabel="Sort products"
+              className="min-w-[180px]"
+              options={[
+                { value: 'featured', label: 'Featured' },
+                { value: 'price-low', label: 'Price, low to high' },
+                { value: 'price-high', label: 'Price, high to low' },
+                { value: 'date-old', label: 'Date, old to new' },
+                { value: 'date-new', label: 'Date, new to old' },
+              ]}
+            />
             </div>
           </div>
         )}

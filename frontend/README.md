@@ -4,6 +4,9 @@ Responsive React and Vite storefront with a component-based admin operations pan
 
 ## Local development
 
+From the repository root:
+
+    cd frontend
     npm install
     npm run dev
 
@@ -44,7 +47,7 @@ Keep Firebase security rules authoritative. Admin authorization must be based on
 
 ## Vercel
 
-The project includes vercel.json with Vite build settings and SPA rewrites.
+The frontend includes `vercel.json` with Vite build settings and SPA rewrites. Set the Vercel Root Directory to `frontend`.
 
     npm run build
 
