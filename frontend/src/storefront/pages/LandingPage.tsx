@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { money, reviews } from "../data";
 import type { StoreActions, StorePage, StoreProduct } from "../types";
 import { CraftRoute } from "../components/CraftRoute";
@@ -16,18 +21,25 @@ const fitNotes = [
 
 export function LandingPage({
   go,
-  openCollection,
   actions,
 }: {
   go: (page: StorePage) => void;
-  openCollection: (category: "All" | "Jeans" | "Henley") => void;
   actions: StoreActions;
 }) {
   const products = actions.products.filter((item) => item.active !== false);
   const jeans = products.filter((item) => item.category === "Jeans");
   const henleys = products.filter((item) => item.category === "Henley");
-  const balancedProducts = [jeans[0], henleys[0], jeans[1], henleys[1], jeans[2], henleys[2]].filter(Boolean) as StoreProduct[];
-  const carouselProducts = balancedProducts.length ? balancedProducts : products;
+  const balancedProducts = [
+    jeans[0],
+    henleys[0],
+    jeans[1],
+    henleys[1],
+    jeans[2],
+    henleys[2],
+  ].filter(Boolean) as StoreProduct[];
+  const carouselProducts = balancedProducts.length
+    ? balancedProducts
+    : products;
   const henleyFeature = henleys[0];
   const heroProduct = jeans[0] || products[0];
   const [active, setActive] = useState(0);
@@ -61,74 +73,221 @@ export function LandingPage({
   return (
     <>
       <section className="editorial-landing-hero">
-        <button className="editorial-hero-media editorial-product-shot" onClick={() => actions.openProduct(heroProduct)}>
+        <button
+          className="editorial-hero-media editorial-product-shot"
+          onClick={() => actions.openProduct(heroProduct)}
+        >
           <img src={heroProduct.image} alt={heroProduct.name} />
-          <span><small>New season / 01</small><strong>{heroProduct.name}</strong></span>
+          <span>
+            <small>New season / 01</small>
+            <strong>{heroProduct.name}</strong>
+          </span>
           <ArrowUpRight />
         </button>
 
         <div className="editorial-hero-copy">
           <p className="eyebrow">Denim & Henleys / one daily uniform</p>
-          <h1>Dhaaga <span>& Dagger</span></h1>
-          <p>Denim with structure. Henleys with honest texture. Built together for the way every day actually moves.</p>
-          <button className="primary" onClick={() => openCollection("All")}>
+          <h1>
+            Dhaaga <span>& Dagger</span>
+          </h1>
+          <p>
+            Denim with structure. Henleys with honest texture. Built together
+            for the way every day actually moves.
+          </p>
+          <button className="primary" onClick={() => go("products")}>
             Shop the collection <ArrowDownRight size={14} />
           </button>
           <div className="editorial-proof">
-            <span><b>13.5 oz</b> ring-spun cloth</span>
-            <span><b>30 days</b> fit exchange</span>
+            <span>
+              <b>13.5 oz</b> ring-spun cloth
+            </span>
+            <span>
+              <b>30 days</b> fit exchange
+            </span>
           </div>
         </div>
 
-        <button className="editorial-hero-media editorial-craft-shot" onClick={() => go("craft")}>
-          <img src="/assets/landing-uniform-henley-denim.webp" alt="Two men wearing indigo and ecru Henleys with denim" />
-          <span><small>One complete uniform</small><strong>Denim meets Henley</strong></span>
+        <button
+          className="editorial-hero-media editorial-craft-shot"
+          onClick={() => go("craft")}
+        >
+          <img
+            src="/assets/landing-uniform-henley-denim.webp"
+            alt="Two men wearing indigo and ecru Henleys with denim"
+          />
+          <span>
+            <small>One complete uniform</small>
+            <strong>Denim meets Henley</strong>
+          </span>
           <ArrowUpRight />
         </button>
       </section>
 
-      <section className="editorial-category-section" aria-labelledby="category-heading">
-        <header><div><p className="eyebrow">Build the uniform</p><h2 id="category-heading">Two garments.<br />One clear point of view.</h2></div><p>Start with the structure of denim, add the tactile ease of a Henley, then look closer at how both are made.</p></header>
+      <section
+        className="editorial-category-section"
+        aria-labelledby="category-heading"
+      >
+        <header>
+          <div>
+            <p className="eyebrow">Build the uniform</p>
+            <h2 id="category-heading">
+              Two garments.
+              <br />
+              One clear point of view.
+            </h2>
+          </div>
+          <p>
+            Start with the structure of denim, add the tactile ease of a Henley,
+            then look closer at how both are made.
+          </p>
+        </header>
         <div className="editorial-category-grid">
-          <button className="category-panel category-premium" onClick={() => openCollection("Jeans")}>
-            <span>01 / Denim</span><strong>Premium jeans</strong><small>Four considered fits</small><ArrowUpRight />
+          <button
+            className="category-panel category-premium"
+            onClick={() => go("products")}
+          >
+            <span>01 / Denim</span>
+            <strong>Premium jeans</strong>
+            <small>Four considered fits</small>
+            <ArrowUpRight />
           </button>
-          <button className="category-panel category-craft" onClick={() => openCollection("Henley")}>
-            <span>02 / Henleys</span><strong>Textured layers</strong><small>Six everyday essentials</small><ArrowUpRight />
+          <button
+            className="category-panel category-craft"
+            onClick={() => go("products")}
+          >
+            <span>02 / Henleys</span>
+            <strong>Textured layers</strong>
+            <small>Six everyday essentials</small>
+            <ArrowUpRight />
           </button>
-          <button className="category-panel category-fit" onClick={() => go("craft")}>
-            <span>03 / Construction</span><strong>Crafted details</strong><small>See every considered choice</small><ArrowUpRight />
+          <button
+            className="category-panel category-fit"
+            onClick={() => go("craft")}
+          >
+            <span>03 / Construction</span>
+            <strong>Crafted details</strong>
+            <small>See every considered choice</small>
+            <ArrowUpRight />
           </button>
         </div>
       </section>
 
       <section className="henley-arrival">
-        <button className="henley-arrival-media" onClick={() => henleyFeature ? actions.openProduct(henleyFeature) : go("products")}><img src="/assets/henley-editorial.webp" alt="Deep indigo Henley paired with raw denim" loading="eager" /><span>New category / Henley 001</span></button>
-        <div className="henley-arrival-copy"><p className="eyebrow">The other half of the uniform</p><h2>Henley<br /><em>enters the scene.</em></h2><p>Cotton slub, honest plackets and an easy layer that belongs naturally beside our denim. Nothing loud. Everything considered.</p><div><button className="primary" onClick={() => henleyFeature ? actions.openProduct(henleyFeature) : go("products")}>Meet the Henley <ArrowDownRight size={14} /></button><button onClick={() => go("craft")}>See how it is made <ArrowUpRight size={14} /></button></div></div>
+        <button
+          className="henley-arrival-media"
+          onClick={() =>
+            henleyFeature ? actions.openProduct(henleyFeature) : go("products")
+          }
+        >
+          <img
+            src="/assets/henley-editorial.webp"
+            alt="Deep indigo Henley paired with raw denim"
+            loading="eager"
+          />
+          <span>New category / Henley 001</span>
+        </button>
+        <div className="henley-arrival-copy">
+          <p className="eyebrow">The other half of the uniform</p>
+          <h2>
+            Henley
+            <br />
+            <em>enters the scene.</em>
+          </h2>
+          <p>
+            Cotton slub, honest plackets and an easy layer that belongs
+            naturally beside our denim. Nothing loud. Everything considered.
+          </p>
+          <div>
+            <button
+              className="primary"
+              onClick={() =>
+                henleyFeature
+                  ? actions.openProduct(henleyFeature)
+                  : go("products")
+              }
+            >
+              Meet the Henley <ArrowDownRight size={14} />
+            </button>
+            <button onClick={() => go("craft")}>
+              See how it is made <ArrowUpRight size={14} />
+            </button>
+          </div>
+        </div>
       </section>
 
-      <section className="heritage-carousel" aria-label="Featured garment carousel">
+      <section
+        className="heritage-carousel"
+        aria-label="Featured garment carousel"
+      >
         <div className="heritage-carousel-copy">
           <p className="eyebrow">Featured piece / 0{active + 1}</p>
           <AnimatePresence mode="wait">
-            <motion.div key={carouselProduct.id} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: .38 }}>
-              <span>{carouselProduct.category} / {carouselProduct.subtype}</span>
+            <motion.div
+              key={carouselProduct.id}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.38 }}
+            >
+              <span>
+                {carouselProduct.category} / {carouselProduct.subtype}
+              </span>
               <h2>{carouselProduct.name}</h2>
-              <p>A considered everyday piece with honest structure, tactile comfort and a finish designed to become your own.</p>
-              <div><b>{money(carouselProduct.price)}</b><button className="primary" onClick={() => actions.openProduct(carouselProduct)}>View this piece <ArrowDownRight size={14} /></button></div>
+              <p>
+                A considered everyday piece with honest structure, tactile
+                comfort and a finish designed to become your own.
+              </p>
+              <div>
+                <b>{money(carouselProduct.price)}</b>
+                <button
+                  className="primary"
+                  onClick={() => actions.openProduct(carouselProduct)}
+                >
+                  View this piece <ArrowDownRight size={14} />
+                </button>
+              </div>
             </motion.div>
           </AnimatePresence>
           <div className="heritage-carousel-controls">
-            <button aria-label="Previous featured pair" onClick={() => setActive((active + slideCount - 1) % slideCount)}><ChevronLeft /></button>
-            <div>{carouselProducts.slice(0, 6).map((item, index) => <button aria-label={`Show ${item.name}`} className={index === active ? "active" : ""} onClick={() => setActive(index)} key={item.id} />)}</div>
-            <button aria-label="Next featured pair" onClick={() => setActive((active + 1) % slideCount)}><ChevronRight /></button>
+            <button
+              aria-label="Previous featured pair"
+              onClick={() => setActive((active + slideCount - 1) % slideCount)}
+            >
+              <ChevronLeft />
+            </button>
+            <div>
+              {carouselProducts.slice(0, 6).map((item, index) => (
+                <button
+                  aria-label={`Show ${item.name}`}
+                  className={index === active ? "active" : ""}
+                  onClick={() => setActive(index)}
+                  key={item.id}
+                />
+              ))}
+            </div>
+            <button
+              aria-label="Next featured pair"
+              onClick={() => setActive((active + 1) % slideCount)}
+            >
+              <ChevronRight />
+            </button>
           </div>
         </div>
         <div className="heritage-carousel-visual">
           <AnimatePresence mode="wait">
-            <motion.img key={carouselProduct.image} src={carouselProduct.image} alt={carouselProduct.name} initial={{ opacity: 0, scale: 1.02 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: .45 }} />
+            <motion.img
+              key={carouselProduct.image}
+              src={carouselProduct.image}
+              alt={carouselProduct.name}
+              initial={{ opacity: 0, scale: 1.02 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.45 }}
+            />
           </AnimatePresence>
-          <span>0{active + 1} / 0{slideCount}</span>
+          <span>
+            0{active + 1} / 0{slideCount}
+          </span>
         </div>
       </section>
 
@@ -147,7 +306,10 @@ export function LandingPage({
             <br />
             everyday fit.
           </h2>
-          <p>Four considered silhouettes, each shaped around a different way of moving.</p>
+          <p>
+            Four considered silhouettes, each shaped around a different way of
+            moving.
+          </p>
         </div>
         <div className="fit-rail">
           {jeans.slice(0, 4).map((item, index) => (
@@ -164,7 +326,7 @@ export function LandingPage({
       <section className="process compact-process">
         <div className="section-intro">
           <div>
-          <p className="eyebrow">From cloth to character</p>
+            <p className="eyebrow">From cloth to character</p>
             <h2>
               Details worth
               <br />
@@ -189,7 +351,7 @@ export function LandingPage({
             <p className="eyebrow">The current edit</p>
             <h2>Everyday signatures</h2>
           </div>
-          <button onClick={() => openCollection("All")}>
+          <button onClick={() => go("products")}>
             View all <ChevronRight size={15} />
           </button>
         </div>
