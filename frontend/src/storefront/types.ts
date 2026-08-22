@@ -7,7 +7,6 @@ export type StorePage =
   | "auth"
   | "product-detail"
   | "cart"
-  | "otp"
   | "address"
   | "review"
   | "success"
@@ -15,6 +14,8 @@ export type StorePage =
 
 export type StoreProduct = {
   id: number;
+  category: "Jeans" | "Henley";
+  subtype: string;
   name: string;
   fit: string;
   price: number;

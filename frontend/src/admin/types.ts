@@ -9,10 +9,15 @@ export type AdminOrder = {
   address: string;
   city: string;
   pin: string;
+  state?: string;
+  landmark?: string;
   createdAt: string;
   status: OrderStatus;
   payment: "COD" | "UPI" | "Card";
   discount?: number;
+  subtotal?: number;
+  total?: number;
+  paymentStatus?: "Pending" | "Paid" | "Failed" | "Refunded";
   items: Array<{ productId: number; name: string; image: string; size: string; quantity: number; price: number }>;
   history: Array<{ status: OrderStatus; at: string }>;
 };

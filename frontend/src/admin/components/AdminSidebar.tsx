@@ -1,5 +1,6 @@
 import { Boxes, LayoutDashboard, LogOut, ShoppingBag } from "lucide-react";
 import type { AdminPage, AdminRoute } from "../types";
+import { clearAdminToken } from "../adminSession";
 
 const links = [
   { label: "Dashboard", target: "admin", icon: LayoutDashboard },
@@ -20,6 +21,6 @@ export function AdminSidebar({ page, go }: { page: AdminPage; go: AdminRoute }) 
       {links.map(({ label, target, icon: Icon }) => <button className={isActive(page, target) ? "active" : ""} onClick={() => go(target)} aria-current={isActive(page, target) ? "page" : undefined} aria-label={label} title={label} key={target}><Icon /><span>{label}</span></button>)}
     </nav>
     <div className="admin-profile"><i>AK</i><span><b>Arjun Kapoor</b><small>Store administrator</small></span></div>
-    <button className="admin-logout" onClick={() => go("home")} aria-label="Log out" title="Log out"><LogOut /><span>Log out</span></button>
+    <button className="admin-logout" onClick={() => { clearAdminToken(); go("home"); }} aria-label="Log out" title="Log out"><LogOut /><span>Log out</span></button>
   </aside>;
 }

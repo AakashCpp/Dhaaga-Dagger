@@ -1,0 +1,12 @@
+{
+  "name": "dhaaga-dagger",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix backend test",
+    "check": "npm --prefix backend run check",
+    "seed": "npm --prefix backend run seed",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev"
+  }
+}

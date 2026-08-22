@@ -1,16 +1,12 @@
-import { ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { authFailed, authStarted, authSucceeded, updateCustomerProfile } from "../../store";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getAuthGateway } from "../../services/firebase/authRegistry";
+import { backendApi } from "../../lib/api";
 import type { StorePage } from "../../storefront/types";
+import { Brand } from "../../storefront/components/Brand";
 
-const previewGoogleUser = {
-  uid: "google-preview-user",
-  email: "rohan@gmail.com",
-  displayName: "Rohan Kumar",
-};
-
-export function AuthPage({ go, notify }: { go: (page: StorePage) => void; notify: (message: string) => void }) {
+export function AuthPage({ go, notify, continueTo = "profile" }: { go: (page: StorePage) => void; notify: (message: string) => void; continueTo?: StorePage }) {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
 
@@ -18,32 +14,37 @@ export function AuthPage({ go, notify }: { go: (page: StorePage) => void; notify
     dispatch(authStarted());
     try {
       const gateway = getAuthGateway();
-      const user = gateway ? await gateway.signInWithGoogle() : await new Promise<typeof previewGoogleUser>((resolve) => window.setTimeout(() => resolve(previewGoogleUser), 450));
+      if (!gateway) throw new Error("Firebase is not configured for this environment");
+      const user = await gateway.signInWithGoogle();
+      await backendApi.customerSession();
       dispatch(authSucceeded(user));
       dispatch(updateCustomerProfile({ uid: user.uid, name: user.displayName || "Dhaaga & Dagger member", email: user.email || "" }));
       notify("Signed in with Google");
-      go("profile");
+      go(continueTo);
     } catch (error) {
       dispatch(authFailed(error instanceof Error ? error.message : "Google sign-in failed"));
     }
   };
 
   return <main className="auth-page">
-    <section className="auth-visual" aria-label="Dhaaga & Dagger relaxed denim">
-      <div><p className="eyebrow">Your rotation, remembered</p><h1>Fits saved.<br /><em>Orders tracked.</em></h1><p>One secure account for your denim history, saved pieces and delivery updates.</p></div>
-      <span>Dhaaga & Dagger / Member access</span>
+    <section className="auth-visual" aria-label="Dhaaga & Dagger member collection">
+      <div className="auth-visual-label"><span>Denim / Henley</span><strong>One considered uniform.</strong><small>Designed to work together, remembered in one account.</small></div>
     </section>
     <section className="auth-panel">
       <div className="auth-panel-inner google-auth-panel">
-        <p className="eyebrow">Member access</p>
-        <h2>One tap.<br />Everything synced.</h2>
-        <p>Use your Google account to keep saved fits, purchases and delivery updates together.</p>
+        <div className="auth-brand-lockup"><Brand /><span>Member access<small>Secure account area</small></span></div>
+        <p className="eyebrow">Dhaaga & Dagger account</p>
+        <h2>Welcome<br />back.</h2>
+        <p>{continueTo === "address" ? "Sign in with Google to secure your order and continue to delivery details." : "Use your Google account to keep saved pieces, purchases and delivery updates together."}</p>
         {auth.error && <p className="auth-error" role="alert">{auth.error}</p>}
         <button className="google-auth-button" onClick={signInWithGoogle} disabled={auth.status === "loading"}>
-          <span aria-hidden="true">G</span>
-          {auth.status === "loading" ? "Connecting to Google…" : "Sign in with Google"}
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true" />
+          {auth.status === "loading" ? "Connecting to Google…" : "Continue with Google"}
+          <ArrowRight aria-hidden="true" />
         </button>
-        <div className="auth-trust"><ShieldCheck /><span>Secure account access<small>Firebase Google Auth adapter ready</small></span></div>
+        <div className="auth-benefits"><span><Check /> Save Jeans and Henleys</span><span><Check /> Track every order</span><span><ShieldCheck /> Verified account access</span></div>
+        <p className="auth-privacy">Google verifies your identity. Dhaaga & Dagger never receives or stores your Google password.</p>
+        <button className="auth-back-store" type="button" onClick={() => go("home")}><ArrowLeft /> Return to the collection</button>
       </div>
     </section>
   </main>;

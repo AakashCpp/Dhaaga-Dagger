@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { money, reviews } from "../data";
-import type { StoreActions, StorePage } from "../types";
+import type { StoreActions, StorePage, StoreProduct } from "../types";
 import { CraftRoute } from "../components/CraftRoute";
 import { ProductTile } from "../components/ProductTile";
 import { StoreFooter } from "../components/StoreFooter";
@@ -16,16 +16,23 @@ const fitNotes = [
 
 export function LandingPage({
   go,
+  openCollection,
   actions,
 }: {
   go: (page: StorePage) => void;
+  openCollection: (category: "All" | "Jeans" | "Henley") => void;
   actions: StoreActions;
 }) {
   const products = actions.products.filter((item) => item.active !== false);
-  const heroProduct = products[0];
+  const jeans = products.filter((item) => item.category === "Jeans");
+  const henleys = products.filter((item) => item.category === "Henley");
+  const balancedProducts = [jeans[0], henleys[0], jeans[1], henleys[1], jeans[2], henleys[2]].filter(Boolean) as StoreProduct[];
+  const carouselProducts = balancedProducts.length ? balancedProducts : products;
+  const henleyFeature = henleys[0];
+  const heroProduct = jeans[0] || products[0];
   const [active, setActive] = useState(0);
-  const slideCount = Math.max(Math.min(products.length, 4), 1);
-  const carouselProduct = products[active % slideCount];
+  const slideCount = Math.max(Math.min(carouselProducts.length, 6), 1);
+  const carouselProduct = carouselProducts[active % slideCount];
 
   useEffect(() => {
     const timer = window.setInterval(
@@ -36,11 +43,11 @@ export function LandingPage({
   }, [slideCount]);
 
   useEffect(() => {
-    const next = products[(active + 1) % slideCount];
+    const next = carouselProducts[(active + 1) % slideCount];
     if (!next) return;
     const preload = new Image();
     preload.src = next.image;
-  }, [active, products, slideCount]);
+  }, [active, carouselProducts, slideCount]);
 
   if (!heroProduct || !carouselProduct) {
     return (
@@ -61,10 +68,10 @@ export function LandingPage({
         </button>
 
         <div className="editorial-hero-copy">
-          <p className="eyebrow">Artisanal denim / shaped edge</p>
+          <p className="eyebrow">Denim & Henleys / one daily uniform</p>
           <h1>Dhaaga <span>& Dagger</span></h1>
-          <p>Cut with purpose. Worn your way. Denim that gets more personal with every day.</p>
-          <button className="primary" onClick={() => go("products")}>
+          <p>Denim with structure. Henleys with honest texture. Built together for the way every day actually moves.</p>
+          <button className="primary" onClick={() => openCollection("All")}>
             Shop the collection <ArrowDownRight size={14} />
           </button>
           <div className="editorial-proof">
@@ -74,38 +81,46 @@ export function LandingPage({
         </div>
 
         <button className="editorial-hero-media editorial-craft-shot" onClick={() => go("craft")}>
-          <img src="/assets/brand/dhaaga-dagger-banner.jpeg" alt="Dhaaga and Dagger tailoring table" />
-          <span><small>Inside the atelier</small><strong>Made with intent</strong></span>
+          <img src="/assets/landing-uniform-henley-denim.webp" alt="Two men wearing indigo and ecru Henleys with denim" />
+          <span><small>One complete uniform</small><strong>Denim meets Henley</strong></span>
           <ArrowUpRight />
         </button>
       </section>
 
-      <section className="editorial-category-grid" aria-label="Explore Dhaaga and Dagger">
-        <button className="category-panel category-premium" onClick={() => go("products")}>
-          <span>01 / Collection</span><strong>Premium denim</strong><ArrowUpRight />
-        </button>
-        <button className="category-panel category-craft" onClick={() => go("craft")}>
-          <span>02 / Construction</span><strong>Crafted details</strong><ArrowUpRight />
-        </button>
-        <button className="category-panel category-fit" onClick={() => go("products")}>
-          <span>03 / Fit guide</span><strong>Rethinking jeans</strong><ArrowUpRight />
-        </button>
+      <section className="editorial-category-section" aria-labelledby="category-heading">
+        <header><div><p className="eyebrow">Build the uniform</p><h2 id="category-heading">Two garments.<br />One clear point of view.</h2></div><p>Start with the structure of denim, add the tactile ease of a Henley, then look closer at how both are made.</p></header>
+        <div className="editorial-category-grid">
+          <button className="category-panel category-premium" onClick={() => openCollection("Jeans")}>
+            <span>01 / Denim</span><strong>Premium jeans</strong><small>Four considered fits</small><ArrowUpRight />
+          </button>
+          <button className="category-panel category-craft" onClick={() => openCollection("Henley")}>
+            <span>02 / Henleys</span><strong>Textured layers</strong><small>Six everyday essentials</small><ArrowUpRight />
+          </button>
+          <button className="category-panel category-fit" onClick={() => go("craft")}>
+            <span>03 / Construction</span><strong>Crafted details</strong><small>See every considered choice</small><ArrowUpRight />
+          </button>
+        </div>
       </section>
 
-      <section className="heritage-carousel" aria-label="Featured denim carousel">
+      <section className="henley-arrival">
+        <button className="henley-arrival-media" onClick={() => henleyFeature ? actions.openProduct(henleyFeature) : go("products")}><img src="/assets/henley-editorial.webp" alt="Deep indigo Henley paired with raw denim" loading="eager" /><span>New category / Henley 001</span></button>
+        <div className="henley-arrival-copy"><p className="eyebrow">The other half of the uniform</p><h2>Henley<br /><em>enters the scene.</em></h2><p>Cotton slub, honest plackets and an easy layer that belongs naturally beside our denim. Nothing loud. Everything considered.</p><div><button className="primary" onClick={() => henleyFeature ? actions.openProduct(henleyFeature) : go("products")}>Meet the Henley <ArrowDownRight size={14} /></button><button onClick={() => go("craft")}>See how it is made <ArrowUpRight size={14} /></button></div></div>
+      </section>
+
+      <section className="heritage-carousel" aria-label="Featured garment carousel">
         <div className="heritage-carousel-copy">
-          <p className="eyebrow">Featured pair / 0{active + 1}</p>
+          <p className="eyebrow">Featured piece / 0{active + 1}</p>
           <AnimatePresence mode="wait">
             <motion.div key={carouselProduct.id} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: .38 }}>
-              <span>{carouselProduct.fit} fit</span>
+              <span>{carouselProduct.category} / {carouselProduct.subtype}</span>
               <h2>{carouselProduct.name}</h2>
-              <p>A considered silhouette with honest structure, everyday comfort and a wash designed to become your own.</p>
-              <div><b>{money(carouselProduct.price)}</b><button className="primary" onClick={() => actions.openProduct(carouselProduct)}>View this pair <ArrowDownRight size={14} /></button></div>
+              <p>A considered everyday piece with honest structure, tactile comfort and a finish designed to become your own.</p>
+              <div><b>{money(carouselProduct.price)}</b><button className="primary" onClick={() => actions.openProduct(carouselProduct)}>View this piece <ArrowDownRight size={14} /></button></div>
             </motion.div>
           </AnimatePresence>
           <div className="heritage-carousel-controls">
             <button aria-label="Previous featured pair" onClick={() => setActive((active + slideCount - 1) % slideCount)}><ChevronLeft /></button>
-            <div>{products.slice(0, 4).map((item, index) => <button aria-label={`Show ${item.name}`} className={index === active ? "active" : ""} onClick={() => setActive(index)} key={item.id} />)}</div>
+            <div>{carouselProducts.slice(0, 6).map((item, index) => <button aria-label={`Show ${item.name}`} className={index === active ? "active" : ""} onClick={() => setActive(index)} key={item.id} />)}</div>
             <button aria-label="Next featured pair" onClick={() => setActive((active + 1) % slideCount)}><ChevronRight /></button>
           </div>
         </div>
@@ -119,7 +134,7 @@ export function LandingPage({
 
       <section className="signal-strip">
         <span>13.5 oz ring-spun denim</span>
-        <span>Movement-first patterning</span>
+        <span>Breathable cotton-slub Henleys</span>
         <span>Free delivery across India</span>
         <span>30-day fit exchange</span>
       </section>
@@ -135,7 +150,7 @@ export function LandingPage({
           <p>Four considered silhouettes, each shaped around a different way of moving.</p>
         </div>
         <div className="fit-rail">
-          {products.slice(0, 4).map((item, index) => (
+          {jeans.slice(0, 4).map((item, index) => (
             <button key={item.id} onClick={() => actions.openProduct(item)}>
               <span>0{index + 1}</span>
               <strong>{item.fit}</strong>
@@ -157,7 +172,7 @@ export function LandingPage({
             </h2>
           </div>
           <button onClick={() => go("craft")}>
-            Inside the jean <ArrowDownRight size={15} />
+            Inside every garment <ArrowDownRight size={15} />
           </button>
         </div>
         <CraftRoute />
@@ -174,12 +189,12 @@ export function LandingPage({
             <p className="eyebrow">The current edit</p>
             <h2>Everyday signatures</h2>
           </div>
-          <button onClick={() => go("products")}>
+          <button onClick={() => openCollection("All")}>
             View all <ChevronRight size={15} />
           </button>
         </div>
         <div className="collection-grid landing-products">
-          {products.slice(0, 4).map((item, index) => (
+          {carouselProducts.slice(0, 4).map((item, index) => (
             <ProductTile
               key={item.id}
               product={item}

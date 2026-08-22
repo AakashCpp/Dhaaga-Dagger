@@ -12,7 +12,6 @@ export const storefrontPages: StorePage[] = [
   "auth",
   "product-detail",
   "cart",
-  "otp",
   "address",
   "review",
   "success",

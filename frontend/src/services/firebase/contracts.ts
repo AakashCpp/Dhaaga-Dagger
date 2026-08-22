@@ -11,6 +11,7 @@ export interface AuthGateway {
   signInWithGoogle: () => Promise<AuthUser>;
   signOut: () => Promise<void>;
   subscribe: (listener: (user: AuthUser | null) => void) => () => void;
+  getIdToken: () => Promise<string | null>;
 }
 
 export interface ProductImageStorage {

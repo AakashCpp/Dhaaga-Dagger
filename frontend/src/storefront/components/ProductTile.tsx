@@ -23,7 +23,7 @@ export function ProductTile({ product, index, liked, toggleLike, openProduct, ad
       <button className="view-product" aria-label={`View ${product.name}`} onClick={() => openProduct(product)}><Eye size={15} /> View</button>
       <div className="quick-size">{product.sizes.map((value) => <button onClick={() => setSize(value)} className={size === value ? "picked" : ""} key={value}>{value}</button>)}</div>
     </div>
-    <button className="product-info product-link" onClick={() => openProduct(product)}><div><p>{product.fit} silhouette</p><h2>{product.name}</h2></div><b>{money(product.price)}</b></button>
-    <div className="product-bottom"><span><i style={{ background: product.color }} /> Core wash</span><button onClick={() => add(product, size)}>Add to bag <Plus size={14} /></button></div>
+    <button className="product-info product-link" onClick={() => openProduct(product)}><div><p>{product.category} / {product.subtype}</p><h2>{product.name}</h2></div><b>{money(product.price)}</b></button>
+    <div className="product-bottom"><span><i style={{ background: product.color }} /> {product.category === "Jeans" ? "Core wash" : "Core colour"}</span><button onClick={() => add(product, size)}>Add to bag <Plus size={14} /></button></div>
   </motion.article>;
 }

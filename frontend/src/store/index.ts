@@ -1,14 +1,11 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { localCatalogRepository } from "../admin/catalog";
-import { createInitialOrders } from "../admin/data";
 import type { AdminOrder, OrderStatus } from "../admin/types";
 import type { StoreLine, StoreProduct } from "../storefront/types";
 
 const CUSTOMER_KEY = "denimkart.customer.v1";
 const CART_KEY = "denimkart.cart.v1";
-const AUTH_KEY = "denimkart.auth.v1";
-const ORDERS_KEY = "denimkart.orders.v1";
 const CHECKOUT_KEY = "denimkart.checkout.v1";
 
 export type PurchaseRecord = {
@@ -19,7 +16,7 @@ export type PurchaseRecord = {
   productIds: number[];
 };
 
-type CustomerState = {
+export type CustomerState = {
   profile: { uid: string; name: string; email: string; phone: string; joinedAt: string };
   likedIds: number[];
   purchases: PurchaseRecord[];
@@ -37,12 +34,9 @@ export type CheckoutDraft = {
 };
 
 const defaultCustomer: CustomerState = {
-  profile: { uid: "local-preview-user", name: "Rohan Kumar", email: "rohan@denimkart.com", phone: "+91 98765 43210", joinedAt: "August 2026" },
+  profile: { uid: "guest", name: "Guest member", email: "Sign in to sync", phone: "Not added", joinedAt: "—" },
   likedIds: [],
-  purchases: [
-    { id: "DK12345678", date: "18 Aug 2026", status: "Shipped", total: 2798, productIds: [1, 6] },
-    { id: "DK12345591", date: "02 Aug 2026", status: "Delivered", total: 1599, productIds: [5] },
-  ],
+  purchases: [],
 };
 
 type AuthState = {
@@ -51,16 +45,16 @@ type AuthState = {
   error: string | null;
 };
 
-const defaultAuth: AuthState = { status: "guest", user: null, error: null };
+const defaultAuth: AuthState = { status: "loading", user: null, error: null };
 
 const defaultCheckout: CheckoutDraft = {
-  phone: "+91 98765 43210",
-  fullName: "Rohan Kumar",
-  pin: "110001",
-  address: "123, MG Road, Connaught Place",
+  phone: "",
+  fullName: "",
+  pin: "",
+  address: "",
   landmark: "",
-  city: "New Delhi",
-  state: "Delhi",
+  city: "",
+  state: "",
   payment: "COD",
 };
 
@@ -98,6 +92,7 @@ const cartSlice = createSlice({
     },
     removeCartLine: (state, action: PayloadAction<number>) => state.filter((line) => line.id !== action.payload),
     clearCart: () => [],
+    replaceCart: (_state, action: PayloadAction<StoreLine[]>) => action.payload,
   },
 });
 
@@ -109,6 +104,7 @@ const checkoutSlice = createSlice({
       const { field, value } = action.payload;
       Object.assign(state, { [field]: value });
     },
+    replaceCheckout: (_state, action: PayloadAction<CheckoutDraft>) => action.payload,
   },
 });
 
@@ -132,15 +128,17 @@ const customerSlice = createSlice({
       const order = state.purchases.find((purchase) => purchase.id === action.payload.id);
       if (order) order.status = action.payload.status;
     },
+    replaceWishlist: (state, action: PayloadAction<number[]>) => {
+      state.likedIds = action.payload;
+    },
+    resetCustomer: () => defaultCustomer,
   },
 });
 
 type OrdersState = { items: AdminOrder[]; latestOrderId: string | null };
 
 function loadOrders(): OrdersState {
-  const seeded = createInitialOrders(localCatalogRepository.load());
-  const saved = readJson<AdminOrder[] | OrdersState>(ORDERS_KEY, seeded);
-  return Array.isArray(saved) ? { items: saved, latestOrderId: null } : saved;
+  return { items: [], latestOrderId: null };
 }
 
 const ordersSlice = createSlice({
@@ -148,6 +146,7 @@ const ordersSlice = createSlice({
   initialState: loadOrders(),
   reducers: {
     addOrder: (state, action: PayloadAction<AdminOrder>) => {
+      if (state.items.some((order) => order.id === action.payload.id)) return;
       state.items.unshift(action.payload);
       state.latestOrderId = action.payload.id;
     },
@@ -157,12 +156,15 @@ const ordersSlice = createSlice({
       order.status = action.payload.status;
       order.history.push({ status: action.payload.status, at: action.payload.at });
     },
+    hydrateOrders: (state, action: PayloadAction<AdminOrder[]>) => {
+      state.items = action.payload;
+    },
   },
 });
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: readJson<AuthState>(AUTH_KEY, defaultAuth),
+  initialState: defaultAuth,
   reducers: {
     authStarted: (state) => {
       state.status = "loading";
@@ -194,23 +196,19 @@ export const store = configureStore({
 
 let previousState = store.getState();
 let persistenceTimer: number | undefined;
-const pendingPersistence = { catalog: false, cart: false, checkout: false, customer: false, auth: false, orders: false };
+const pendingPersistence = { catalog: false, cart: false, checkout: false, customer: false };
 store.subscribe(() => {
   const state = store.getState();
   const catalogChanged = state.catalog !== previousState.catalog;
   const cartChanged = state.cart !== previousState.cart;
   const checkoutChanged = state.checkout !== previousState.checkout;
   const customerChanged = state.customer !== previousState.customer;
-  const authChanged = state.auth !== previousState.auth;
-  const ordersChanged = state.orders !== previousState.orders;
   previousState = state;
-  if (!catalogChanged && !cartChanged && !checkoutChanged && !customerChanged && !authChanged && !ordersChanged) return;
+  if (!catalogChanged && !cartChanged && !checkoutChanged && !customerChanged) return;
   pendingPersistence.catalog ||= catalogChanged;
   pendingPersistence.cart ||= cartChanged;
   pendingPersistence.checkout ||= checkoutChanged;
   pendingPersistence.customer ||= customerChanged;
-  pendingPersistence.auth ||= authChanged;
-  pendingPersistence.orders ||= ordersChanged;
   window.clearTimeout(persistenceTimer);
   persistenceTimer = window.setTimeout(() => {
     const pending = { ...pendingPersistence };
@@ -218,27 +216,23 @@ store.subscribe(() => {
     pendingPersistence.cart = false;
     pendingPersistence.checkout = false;
     pendingPersistence.customer = false;
-    pendingPersistence.auth = false;
-    pendingPersistence.orders = false;
     if (pending.catalog) localCatalogRepository.save(store.getState().catalog);
     try {
       const latest = store.getState();
       if (pending.cart) window.localStorage.setItem(CART_KEY, JSON.stringify(latest.cart));
       if (pending.checkout) window.localStorage.setItem(CHECKOUT_KEY, JSON.stringify(latest.checkout));
       if (pending.customer) window.localStorage.setItem(CUSTOMER_KEY, JSON.stringify(latest.customer));
-      if (pending.auth) window.localStorage.setItem(AUTH_KEY, JSON.stringify(latest.auth));
-      if (pending.orders) window.localStorage.setItem(ORDERS_KEY, JSON.stringify(latest.orders));
     } catch {
-      // Firebase adapters will replace local persistence in production.
+      // Local cache is optional; authenticated API state remains authoritative.
     }
   }, 120);
 });
 
 export const { replaceCatalog } = catalogSlice.actions;
-export const { addCartLine, updateCartLine, removeCartLine, clearCart } = cartSlice.actions;
-export const { updateCheckoutField } = checkoutSlice.actions;
-export const { toggleLikedProduct, hydrateCustomer, updateCustomerProfile, addPurchaseRecord, updatePurchaseStatus } = customerSlice.actions;
+export const { addCartLine, updateCartLine, removeCartLine, clearCart, replaceCart } = cartSlice.actions;
+export const { updateCheckoutField, replaceCheckout } = checkoutSlice.actions;
+export const { toggleLikedProduct, hydrateCustomer, updateCustomerProfile, addPurchaseRecord, updatePurchaseStatus, replaceWishlist, resetCustomer } = customerSlice.actions;
 export const { authStarted, authSucceeded, authFailed, signedOut } = authSlice.actions;
-export const { addOrder, updateOrderStatus } = ordersSlice.actions;
+export const { addOrder, updateOrderStatus, hydrateOrders } = ordersSlice.actions;
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -1,33 +1,10 @@
 import { useRef, useState } from "react";
 import type { ChangeEvent, DragEvent, KeyboardEvent } from "react";
 import { ImagePlus, Star, Trash2, UploadCloud } from "lucide-react";
+import { backendApi } from "../../lib/api";
 
 const MAX_IMAGES = 6;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-
-function optimizeImage(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Could not read this image."));
-    reader.onload = () => {
-      const image = new Image();
-      image.onerror = () => reject(new Error("This image format could not be processed."));
-      image.onload = () => {
-        const maxEdge = 1600;
-        const scale = Math.min(1, maxEdge / Math.max(image.width, image.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.round(image.width * scale);
-        canvas.height = Math.round(image.height * scale);
-        const context = canvas.getContext("2d");
-        if (!context) return reject(new Error("Image processing is unavailable."));
-        context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", .84));
-      };
-      image.src = String(reader.result);
-    };
-    reader.readAsDataURL(file);
-  });
-}
 
 export function ImageUploadManager({ images, onChange }: { images: string[]; onChange: (images: string[]) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,8 +21,8 @@ export function ImageUploadManager({ images, onChange }: { images: string[]; onC
     if (files.length > available) setError("Only " + available + " more image" + (available === 1 ? "" : "s") + " can be added.");
     setProcessing(true);
     try {
-      const optimized = await Promise.all(accepted.map(optimizeImage));
-      onChange([...images, ...optimized]);
+      const uploaded = await Promise.all(accepted.map((file) => backendApi.uploadProductImage(file)));
+      onChange([...images, ...uploaded]);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Images could not be processed.");
     } finally {
@@ -75,7 +52,7 @@ export function ImageUploadManager({ images, onChange }: { images: string[]; onC
     <div className={"image-dropzone " + (dragging ? "dragging " : "") + (processing ? "processing" : "")} role="button" tabIndex={0} aria-label="Upload product images" onClick={openPicker} onKeyDown={handleKey} onDragEnter={(event) => { event.preventDefault(); setDragging(true); }} onDragOver={(event) => event.preventDefault()} onDragLeave={() => setDragging(false)} onDrop={handleDrop}>
       <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleInput} />
       <UploadCloud />
-      <div><b>{processing ? "Optimizing images..." : "Drop product images here"}</b><span>or click to browse / JPG, PNG, WEBP / up to 6</span></div>
+      <div><b>{processing ? "Uploading images..." : "Drop product images here"}</b><span>or click to browse / JPG, PNG, WEBP / up to 6</span></div>
       <strong>{images.length} / {MAX_IMAGES}</strong>
     </div>
     {error && <p className="image-upload-error">{error}</p>}

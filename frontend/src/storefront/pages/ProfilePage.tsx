@@ -39,9 +39,9 @@ export function ProfilePage({
       <header className="profile-hero">
         <div>
           <p className="eyebrow">Dhaaga & Dagger account</p>
-          <h1>Your denim,<br /><em>kept together.</em></h1>
+          <h1>Your rotation,<br /><em>kept together.</em></h1>
         </div>
-        <p>Orders, saved fits and the details tied to your account, all in one clear view.</p>
+        <p>Orders, saved pieces and the details tied to your account, all in one clear view.</p>
       </header>
 
       <section className="profile-overview">
@@ -114,7 +114,7 @@ export function ProfilePage({
         ) : (
           <div className="profile-saved-empty">
             <Heart />
-            <p>Your saved fits will appear here.</p>
+            <p>Your saved pieces will appear here.</p>
             <button className="primary" onClick={() => go("products")}>Explore collection</button>
           </div>
         )}

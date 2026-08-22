@@ -10,7 +10,7 @@ function optimizeKnownAsset(url: string) {
 }
 
 function migrateLocalAssets(products: StoreProduct[]) {
-  return products.map((product) => ({ ...product, image: optimizeKnownAsset(product.image), gallery: product.gallery?.map(optimizeKnownAsset) }));
+  return products.map((product) => ({ ...product, category: product.category || "Jeans", subtype: product.subtype || product.fit || "Regular", image: optimizeKnownAsset(product.image), gallery: product.gallery?.map(optimizeKnownAsset) }));
 }
 
 export interface CatalogRepository {
@@ -29,7 +29,9 @@ export function loadCatalog(): StoreProduct[] {
     ...product,
     sku: product.sku || `DK-${String(product.id).padStart(4, "0")}`,
     stock: product.stock ?? 24 + index * 3,
-    description: product.description || `A considered ${product.fit.toLowerCase()} silhouette in durable ring-spun denim.`,
+    description: product.description || (product.category === "Henley"
+      ? `A considered ${product.subtype.toLowerCase()} Henley in breathable cotton.`
+      : `A considered ${product.fit.toLowerCase()} silhouette in durable ring-spun denim.`),
     active: product.active ?? true,
   })));
 }
