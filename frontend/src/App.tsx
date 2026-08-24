@@ -25,8 +25,10 @@ import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { authSucceeded, clearCart, hydrateCustomer, hydrateOrders, replaceCart, replaceCheckout, resetCustomer, signedOut, store, updateCustomerProfile } from "./store";
 import { getAuthGateway } from "./services/firebase/authRegistry";
 import { backendApi } from "./lib/api";
+import { clearOrderVerification, hasOrderVerification } from "./auth/orderVerificationSession";
 
 const protectedStorefrontPages = new Set<StorePage>(["wishlist", "profile", "address", "review", "success", "tracking"]);
+const orderVerifiedPages = new Set<StorePage>(["address", "review"]);
 
 export default function App() {
   const [page, setPage] = useState<AppPage>(pageFromLocation);
@@ -51,6 +53,7 @@ export default function App() {
     }
     return gateway.subscribe((user) => {
       if (!user) {
+        clearOrderVerification();
         dispatch(signedOut());
         if (hadAuthenticatedSession.current) {
           dispatch(resetCustomer());
@@ -86,9 +89,14 @@ export default function App() {
       go("auth");
       return;
     }
+    if (orderVerifiedPages.has(next) && !hasOrderVerification(auth.user?.uid)) {
+      setAuthContinueTo(next);
+      go("auth");
+      return;
+    }
     if (next === "products") setCollectionCategory("All");
     go(next);
-  }, [auth.status, go]);
+  }, [auth.status, auth.user?.uid, go]);
   const openCollection = useCallback((category: "All" | "Jeans" | "Henley") => {
     setCollectionCategory(category);
     go("products");
@@ -100,13 +108,13 @@ export default function App() {
     go("auth");
   }, [auth.status, go, page]);
   const beginCheckout = useCallback(() => {
-    if (auth.status === "authenticated") {
+    if (auth.status === "authenticated" && hasOrderVerification(auth.user?.uid)) {
       storefrontGo("address");
       return;
     }
     setAuthContinueTo("address");
     go("auth");
-  }, [auth.status, go, storefrontGo]);
+  }, [auth.status, auth.user?.uid, go, storefrontGo]);
   const openAdminLogin = useCallback(() => go("admin-login"), [go]);
   const actions: StoreActions = useMemo(() => ({
     ...controller.actions,
@@ -129,6 +137,10 @@ export default function App() {
 
   if (protectedStorefrontPages.has(page as StorePage) && auth.status !== "authenticated") {
     if (auth.status === "loading") return <main className="secure-route-check"><span>Verifying your secure session…</span></main>;
+    return <><AuthPage go={storefrontGo} notify={controller.notify} continueTo={page as StorePage} /><ToastStack messages={controller.toasts} /></>;
+  }
+
+  if (orderVerifiedPages.has(page as StorePage) && !hasOrderVerification(auth.user?.uid)) {
     return <><AuthPage go={storefrontGo} notify={controller.notify} continueTo={page as StorePage} /><ToastStack messages={controller.toasts} /></>;
   }
 

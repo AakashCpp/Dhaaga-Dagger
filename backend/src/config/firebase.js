@@ -8,13 +8,16 @@ function firebaseCredentialsConfigured() {
   return Boolean(env.firebaseProjectId && env.firebaseClientEmail && env.firebasePrivateKey);
 }
 
-export function getFirebaseAuth() {
+export function getFirebaseApp() {
   if (!firebaseApp) {
     try {
       const credential = firebaseCredentialsConfigured()
         ? cert({ projectId: env.firebaseProjectId, clientEmail: env.firebaseClientEmail, privateKey: env.firebasePrivateKey })
         : applicationDefault();
-      firebaseApp = getApps()[0] || initializeApp({ credential, projectId: env.firebaseProjectId || undefined });
+      firebaseApp = getApps()[0] || initializeApp({
+        credential,
+        projectId: env.firebaseProjectId || undefined,
+      });
     } catch (error) {
       const configurationError = new Error("Firebase Admin credentials are not configured");
       configurationError.status = 503;
@@ -22,6 +25,9 @@ export function getFirebaseAuth() {
       throw configurationError;
     }
   }
-  return getAuth(firebaseApp);
+  return firebaseApp;
 }
 
+export function getFirebaseAuth() {
+  return getAuth(getFirebaseApp());
+}

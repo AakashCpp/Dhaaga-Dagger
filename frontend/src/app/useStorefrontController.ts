@@ -7,6 +7,7 @@ import { storeProducts } from "../storefront/data";
 import type { StoreActions, StoreProduct } from "../storefront/types";
 import { backendApi, SOCKET_ORIGIN } from "../lib/api";
 import type { AdminOrder } from "../admin/types";
+import { clearOrderVerification } from "../auth/orderVerificationSession";
 
 export function useStorefrontController() {
   const dispatch = useAppDispatch();
@@ -109,6 +110,7 @@ export function useStorefrontController() {
       dispatch(addOrder(saved));
       dispatch(addPurchaseRecord({ id: saved.id, date: saved.createdAt, status: "Processing", total: saved.total ?? saved.items.reduce((sum, item) => sum + item.price * item.quantity, 0) - (saved.discount || 0), productIds: saved.items.map((item) => item.productId) }));
       dispatch(clearCart());
+      clearOrderVerification();
       notify(`Order #${saved.id} placed successfully`);
       return saved.id;
     } catch (error) {

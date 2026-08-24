@@ -4,7 +4,6 @@ import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
-import path from "node:path";
 import { env } from "./config/env.js";
 import { errorHandler, notFound } from "./middleware/errors.js";
 import { healthRouter } from "./routes/health.routes.js";
@@ -25,8 +24,6 @@ app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan(env.nodeEnv === "production" ? "combined" : "dev"));
 app.use(rateLimit({ windowMs: 15 * 60_000, limit: 600, standardHeaders: "draft-8", legacyHeaders: false }));
-if (env.uploadProvider === "local") app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads"), { maxAge: "7d", immutable: true }));
-
 app.get("/", (_request, response) => response.json({
   service: "Dhaaga & Dagger API",
   health: "/api/v1/health",

@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import { app } from "../src/app.js";
 import { createAdminToken } from "../src/services/admin-token.service.js";
+import { createOrderVerificationToken, verifyOrderVerificationToken } from "../src/services/order-verification-token.service.js";
+import { requireOrderVerification } from "../src/middleware/auth.js";
 
 let server;
 let origin;
@@ -58,4 +60,25 @@ test("order creation rejects unauthenticated customers", async () => {
     body: "{}",
   });
   assert.equal(response.status, 401);
+});
+
+test("order verification token is bound to the Firebase customer", () => {
+  const token = createOrderVerificationToken("firebase-user-1", "customer@example.com");
+  const verification = verifyOrderVerificationToken(token);
+  assert.equal(verification.sub, "firebase-user-1");
+  assert.equal(verification.email, "customer@example.com");
+
+  let status;
+  let message;
+  const request = {
+    get: () => token,
+    customer: { firebase: { uid: "another-user", email: "customer@example.com" } },
+  };
+  const response = {
+    status(code) { status = code; return this; },
+    json(payload) { message = payload.error.message; return this; },
+  };
+  requireOrderVerification(request, response, () => assert.fail("mismatched customer must not pass"));
+  assert.equal(status, 403);
+  assert.match(message, /expired/i);
 });

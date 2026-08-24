@@ -17,6 +17,8 @@ The API starts at `http://localhost:5000`. The frontend defaults to this address
 - `GET /api/v1/health` — process and database status.
 - `GET /api/v1/health/ready` — readiness check; returns 503 until MongoDB connects.
 - `GET /api/v1/auth/customer/session` — verify a Firebase customer ID token and sync the user.
+- `POST /api/v1/auth/customer/request-code` — send an order verification code to the Firebase-verified customer email.
+- `POST /api/v1/auth/customer/verify-code` — exchange the code for a short-lived, customer-bound order verification token.
 - `POST /api/v1/auth/admin/request-code` — send a code to the configured admin email.
 - `POST /api/v1/auth/admin/verify-code` — exchange a valid code for an admin JWT.
 - `GET /api/v1/auth/admin/session` — validate an admin JWT.
@@ -26,9 +28,9 @@ The API starts at `http://localhost:5000`. The frontend defaults to this address
 - `PUT /api/v1/customers/me/cart|wishlist|checkout` and `PATCH /api/v1/customers/me/profile` — customer state mutations.
 - `GET /api/v1/orders` — recent orders; admin token required.
 - `GET /api/v1/orders/mine` — current customer's orders.
-- `POST /api/v1/orders` — validate price/stock on the server, reserve inventory, persist and broadcast an order.
+- `POST /api/v1/orders` — requires Firebase auth plus `X-Order-Verification`, then validates price/stock, reserves inventory, persists and broadcasts an order.
 - `PATCH /api/v1/orders/:id/status` — sequential admin fulfilment update.
-- `POST /api/v1/uploads/product-image` — admin image upload (local in development, Cloudinary in production).
+- `POST /api/v1/uploads/product-image` — admin-only Cloudinary upload with SHA-256 content addressing.
 - `GET /api/v1/notifications` — latest admin notifications.
 - `POST /api/v1/notifications` — create and broadcast a notification.
 - `PATCH /api/v1/notifications/:id/read` — mark one notification read.
@@ -53,19 +55,23 @@ Set these variables on the backend host:
 - `MONGODB_URI` — use MongoDB Atlas or another network-accessible MongoDB URI in production.
 - `CLIENT_ORIGINS` — comma-separated frontend origins.
 - `NODE_ENV=production`
-- `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` — Firebase service-account credentials used only by the backend.
+- `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY` — Firebase service-account credentials used only by the backend.
 - `ADMIN_EMAIL` — the only email permitted to request admin access.
-- `ADMIN_OTP_SECRET` and `ADMIN_JWT_SECRET` — separate long random secrets.
+- `ORDER_OTP_SECRET`, `ORDER_TOKEN_SECRET`, `ORDER_OTP_EXPIRY_MINUTES`, and `ORDER_TOKEN_EXPIRY_MINUTES` — customer order verification settings.
+- `ADMIN_OTP_SECRET`, `ADMIN_TOKEN_SECRET`, and `ADMIN_OTP_EXPIRY_MINUTES` — admin access-code and session settings.
 - `MAIL_MODE=smtp`, plus `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, and `MAIL_FROM`.
-- `UPLOAD_PROVIDER=cloudinary`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`.
-- `PUBLIC_API_URL` — public backend origin used only for local-upload URLs.
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` — backend-only product image storage credentials.
 
 For Gmail SMTP, use an app password rather than the Google account password. In local development, `MAIL_MODE=console` returns and logs a development code; this behavior is disabled when `NODE_ENV=production`.
 
 For real admin OTP delivery, set `ADMIN_EMAIL` to the only authorized inbox, set `SMTP_USER` to the sending mailbox, add its `SMTP_PASS`, and switch `MAIL_MODE=smtp`. Production refuses to start an admin OTP request when SMTP or strong OTP/JWT secrets are missing; a code is deleted if delivery fails, so an unsent code can never be verified.
 
-For exact Socket.IO updates across multiple admin systems, deploy with the root `render.yaml`, included Dockerfile, or another persistent Node host. Vercel can serve the HTTP API, but its serverless runtime is not a durable Socket.IO host. Do not use localhost MongoDB or local image storage in production.
+Customer order codes use the same company SMTP sender, but the destination email is taken only from a verified Firebase ID token. In production, set strong, distinct customer OTP and order-verification JWT secrets. Order authorization is short-lived, bound to the Firebase UID/email, kept in browser session storage, and cleared after a successful order.
+
+Product uploads are sent from the admin-authenticated backend directly to Cloudinary. The backend computes a SHA-256 digest of the image bytes, uses it as the stable Cloudinary public ID, stores the digest as asset context, and returns the secure delivery URL. Cloudinary credentials remain backend-only.
+
+For exact Socket.IO updates across multiple admin systems, deploy with the root `render.yaml`, included Dockerfile, or another persistent Node host. Vercel can serve the HTTP API, but its serverless runtime is not a durable Socket.IO host. Do not use localhost MongoDB in production.
 
 ## Firebase setup
 
-Create a Firebase project, enable Google in Authentication → Sign-in method, and add the local and deployed frontend domains to Authorized domains. Put the Firebase web configuration in `frontend/.env` and a Firebase service account in `backend/.env`. Never place the service-account private key in the frontend.
+Create a Firebase project, enable Google in Authentication → Sign-in method, and add the local and deployed frontend domains to Authorized domains. Put the Firebase web configuration in `frontend/.env` and a Firebase service account in `backend/.env`. Never place the service-account private key in the frontend. Firebase is used for customer authentication; product media is stored in Cloudinary.

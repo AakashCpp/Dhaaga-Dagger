@@ -1,37 +1,39 @@
-import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { createHash } from "node:crypto";
 import { v2 as cloudinary } from "cloudinary";
 import { env } from "../config/env.js";
 
-const extensionByMime = { "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp" };
-
-async function uploadLocal(file) {
-  const extension = extensionByMime[file.mimetype] || ".jpg";
-  const filename = `${randomUUID()}${extension}`;
-  const uploadDirectory = path.resolve(process.cwd(), "uploads");
-  await mkdir(uploadDirectory, { recursive: true });
-  await writeFile(path.join(uploadDirectory, filename), file.buffer);
-  return `${env.publicApiUrl}/uploads/${filename}`;
+export function productImageDigest(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
 }
 
-async function uploadCloudinary(file) {
+export async function uploadProductImage(file) {
   if (!env.cloudinaryCloudName || !env.cloudinaryApiKey || !env.cloudinaryApiSecret) {
-    const error = new Error("Cloudinary is not configured");
+    const error = new Error("Cloudinary image storage is not configured");
     error.status = 503;
     throw error;
   }
-  cloudinary.config({ cloud_name: env.cloudinaryCloudName, api_key: env.cloudinaryApiKey, api_secret: env.cloudinaryApiSecret, secure: true });
+
+  const digest = productImageDigest(file.buffer);
+  cloudinary.config({
+    cloud_name: env.cloudinaryCloudName,
+    api_key: env.cloudinaryApiKey,
+    api_secret: env.cloudinaryApiSecret,
+    secure: true,
+  });
+
   return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream({ folder: "dhaaga-dagger/products", resource_type: "image", transformation: [{ width: 1800, height: 2200, crop: "limit", quality: "auto", fetch_format: "auto" }] }, (error, result) => {
-      if (error || !result) reject(error || new Error("Upload failed"));
+    const stream = cloudinary.uploader.upload_stream({
+      folder: "dhaaga-dagger/products",
+      public_id: digest,
+      unique_filename: false,
+      overwrite: true,
+      resource_type: "image",
+      context: { sha256: digest, source: "admin-product-upload" },
+      transformation: [{ width: 1800, height: 2200, crop: "limit", quality: "auto" }],
+    }, (error, result) => {
+      if (error || !result?.secure_url) reject(error || new Error("Cloudinary upload failed"));
       else resolve(result.secure_url);
     });
     stream.end(file.buffer);
   });
 }
-
-export function uploadProductImage(file) {
-  return env.uploadProvider === "cloudinary" ? uploadCloudinary(file) : uploadLocal(file);
-}
-

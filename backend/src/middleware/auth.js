@@ -1,6 +1,7 @@
 import { getFirebaseAuth } from "../config/firebase.js";
 import { User } from "../models/User.js";
 import { verifyAdminToken } from "../services/admin-token.service.js";
+import { verifyOrderVerificationToken } from "../services/order-verification-token.service.js";
 
 function bearerToken(request) {
   const [scheme, token] = (request.headers.authorization || "").split(" ");
@@ -42,5 +43,20 @@ export function requireAdmin(request, response, next) {
     next();
   } catch {
     return response.status(401).json({ error: { message: "Invalid or expired admin session" } });
+  }
+}
+
+export function requireOrderVerification(request, response, next) {
+  const token = request.get("X-Order-Verification");
+  if (!token) return response.status(403).json({ error: { message: "Verify your email code before placing the order" } });
+  try {
+    const verification = verifyOrderVerificationToken(token);
+    if (verification.purpose !== "order-email-verification"
+      || verification.sub !== request.customer.firebase.uid
+      || verification.email !== request.customer.firebase.email.toLowerCase()) throw new Error("Verification does not match customer");
+    request.orderVerification = verification;
+    next();
+  } catch {
+    return response.status(403).json({ error: { message: "Order email verification has expired. Request a new code." } });
   }
 }
