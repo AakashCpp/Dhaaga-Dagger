@@ -4503,3 +4503,244 @@ body,
   .profile-overview { grid-template-columns: 1fr !important; }
 }
 
+/* Mobile cascade repairs: keep the compact header and controls usable. */
+@media (max-width: 700px) {
+  .store-nav {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .store-nav .mobile-menu-toggle,
+  .store-nav .nav-actions .cart-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  /* A later generic nav-action rule used to reveal this hidden shortcut. */
+  .store-nav .nav-actions button[aria-label="Account"] {
+    display: none !important;
+  }
+
+  .nav-brand-button {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .nav-wordmark {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .product-media-actions button,
+  .product-save,
+  .product-gallery-arrow {
+    min-width: 42px;
+    min-height: 42px;
+  }
+
+  .modern-footer nav button,
+  .modern-footer nav a {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Final surface contract: light surfaces always use dark, legible type. */
+.profile-page {
+  background: var(--site-canvas) !important;
+  color: var(--ink) !important;
+}
+
+/* The account hero remains the single dark profile surface. */
+.profile-hero {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(155, 227, 194, .14), transparent 42%),
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, .12), transparent 38%),
+    #07111c !important;
+  color: #f8fafc !important;
+}
+
+.profile-overview,
+.profile-orders,
+.profile-saved {
+  background: var(--site-canvas) !important;
+  color: var(--ink) !important;
+}
+
+.profile-identity,
+.profile-stats,
+.profile-order-list article,
+.profile-saved-empty {
+  border-color: #d2c9bc !important;
+  background: #fffdf9 !important;
+  color: var(--ink) !important;
+  box-shadow: 0 14px 34px rgba(18, 29, 46, .09) !important;
+}
+
+.profile-identity h2,
+.profile-identity dd,
+.profile-stats strong,
+.profile-section-heading h2,
+.profile-order-id strong,
+.profile-order-products b,
+.profile-order-total b {
+  color: var(--ink) !important;
+}
+
+.profile-identity .eyebrow,
+.profile-section-heading .eyebrow {
+  color: var(--oxblood) !important;
+}
+
+.profile-avatar {
+  border-color: rgba(141, 47, 37, .45) !important;
+  background: #fff !important;
+  color: var(--oxblood) !important;
+  box-shadow: 0 0 0 6px rgba(141, 47, 37, .08) !important;
+}
+
+.profile-auth-action {
+  border-color: var(--oxblood) !important;
+  background: var(--oxblood) !important;
+  color: #fff !important;
+}
+
+.profile-auth-action:hover {
+  border-color: #6f211a !important;
+  background: #6f211a !important;
+  color: #fff !important;
+}
+
+.profile-identity dl > div {
+  border-color: #d8d0c4 !important;
+  background: var(--paper-soft) !important;
+}
+
+.profile-identity dt,
+.profile-order-id small,
+.profile-order-id span,
+.profile-order-total span,
+.profile-order-products span,
+.profile-section-heading > span,
+.profile-saved-empty {
+  color: #46505d !important;
+}
+
+.profile-stats article + article {
+  border-left-color: #d8d0c4 !important;
+}
+
+.profile-stats svg {
+  color: var(--oxblood) !important;
+}
+
+.profile-stats span {
+  color: #364152 !important;
+}
+
+.profile-order-list article:hover {
+  border-color: #b9ad9e !important;
+  background: #fff !important;
+}
+
+.profile-order-list article > button {
+  border-color: #c8bfb2 !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+}
+
+.profile-order-list article > button:hover {
+  border-color: var(--oxblood) !important;
+  background: var(--oxblood) !important;
+  color: #fff !important;
+}
+
+.profile-order-status.delivered {
+  border-color: #86c79b !important;
+  background: #e4f5e9 !important;
+  color: #14532d !important;
+}
+
+.profile-order-status.processing,
+.profile-order-status.confirmed,
+.profile-order-status.shipped {
+  border-color: #9db5d5 !important;
+  background: #e8f0fb !important;
+  color: #173f73 !important;
+}
+
+.profile-section-heading > button {
+  border-bottom-color: var(--oxblood) !important;
+  color: var(--oxblood) !important;
+}
+
+.profile-saved-empty > svg {
+  color: var(--oxblood) !important;
+}
+
+/* Authentication and operations panels share the same high-contrast light UI. */
+.auth-panel,
+.google-auth-panel,
+.admin-login-glass-card,
+.admin-workspace,
+.admin-sidebar,
+.admin-stat-grid article,
+.revenue-panel,
+.admin-performance-panel,
+.recent-orders-panel,
+.admin-toolbar,
+.admin-data-table,
+.admin-product-grid article,
+.order-status-panel,
+.admin-order-items,
+.admin-order-aside section,
+.product-editor-form,
+.product-editor-preview {
+  color: #090d16 !important;
+}
+
+.auth-heading > p:last-child,
+.auth-assurance span,
+.auth-footer-row,
+.admin-login-heading > p:last-child,
+.admin-login-security,
+.admin-data-freshness small,
+.admin-stat-grid article > small,
+.admin-order-snapshot small,
+.admin-table-row small,
+.admin-product-copy p,
+.editor-section-title p {
+  color: #475569 !important;
+}
+
+.admin-auth-input input,
+.admin-toolbar input,
+.editor-fields input,
+.editor-fields textarea,
+.editor-fields select {
+  color: #090d16 !important;
+}
+
+.admin-auth-input input::placeholder,
+.admin-toolbar input::placeholder,
+.editor-fields input::placeholder,
+.editor-fields textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+/* Craft chapters use the same outer edge as the landing hero. */
+.craft-story-page > .craft-story-intro,
+.craft-story-page > .story-prologue,
+.craft-story-page > .craft-atlas,
+.craft-story-page > .fabric-interlude,
+.craft-story-page > .henley-craft-chapter,
+.craft-story-page > .craft-detail-index,
+.craft-story-page > .craft-route-dark,
+.craft-story-page > .craft-cta {
+  width: auto;
+  margin-left: var(--page-gutter);
+  margin-right: var(--page-gutter);
+}
