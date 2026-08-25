@@ -4,6 +4,7 @@ import { app } from "../src/app.js";
 import { createAdminToken } from "../src/services/admin-token.service.js";
 import { createOrderVerificationToken, verifyOrderVerificationToken } from "../src/services/order-verification-token.service.js";
 import { requireOrderVerification } from "../src/middleware/auth.js";
+import { Order } from "../src/models/Order.js";
 
 let server;
 let origin;
@@ -26,6 +27,13 @@ test("health endpoint responds", async () => {
   const payload = await response.json();
   assert.equal(response.status, 200);
   assert.equal(payload.status, "ok");
+});
+
+test("health endpoint allows the configured browser origin", async () => {
+  const browserOrigin = "http://localhost:5173";
+  const response = await fetch(`${origin}/api/v1/health`, { headers: { Origin: browserOrigin } });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("access-control-allow-origin"), browserOrigin);
 });
 
 test("admin session rejects missing token", async () => {
@@ -51,6 +59,26 @@ test("admin session accepts a valid signed token", async () => {
   const payload = await response.json();
   assert.equal(response.status, 200);
   assert.equal(payload.data.role, "admin");
+});
+
+test("admin analytics returns database-derived summaries and daily activity", async () => {
+  const originalAggregate = Order.aggregate;
+  Order.aggregate = async () => [{
+    summary: [{ totalOrders: 3, grossSales: 6400, inFulfilment: 2, averageOrderValue: 2133.33 }],
+    daily: [{ _id: "2026-08-25", orders: 2, sales: 4400 }],
+    statuses: [{ _id: "Placed", count: 2 }, { _id: "Delivered", count: 1 }],
+  }];
+  try {
+    const token = createAdminToken("admin@example.com");
+    const response = await fetch(`${origin}/api/v1/orders/analytics?days=7`, { headers: { Authorization: `Bearer ${token}` } });
+    const payload = await response.json();
+    assert.equal(response.status, 200);
+    assert.equal(payload.data.summary.totalOrders, 3);
+    assert.equal(payload.data.daily[0].sales, 4400);
+    assert.equal(payload.data.statuses.Delivered, 1);
+  } finally {
+    Order.aggregate = originalAggregate;
+  }
 });
 
 test("order creation rejects unauthenticated customers", async () => {

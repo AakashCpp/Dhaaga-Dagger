@@ -15,6 +15,40 @@ export async function listOrders(request, response) {
   response.json({ data: orders });
 }
 
+export async function getOrderAnalytics(request, response) {
+  const days = Math.min(Math.max(Number(request.query.days) || 7, 7), 30);
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  start.setUTCDate(start.getUTCDate() - (days - 1));
+
+  const [result] = await Order.aggregate([{ $facet: {
+    summary: [{ $group: {
+      _id: null,
+      totalOrders: { $sum: 1 },
+      grossSales: { $sum: "$total" },
+      inFulfilment: { $sum: { $cond: [{ $ne: ["$status", "Delivered"] }, 1, 0] } },
+      averageOrderValue: { $avg: "$total" },
+    } }],
+    daily: [
+      { $match: { createdAtTimestamp: { $gte: start } } },
+      { $group: {
+        _id: { $dateToString: { date: "$createdAtTimestamp", format: "%Y-%m-%d", timezone: "Asia/Kolkata" } },
+        orders: { $sum: 1 },
+        sales: { $sum: "$total" },
+      } },
+      { $sort: { _id: 1 } },
+    ],
+    statuses: [{ $group: { _id: "$status", count: { $sum: 1 } } }],
+  } }]);
+
+  const summary = result.summary[0] || { totalOrders: 0, grossSales: 0, inFulfilment: 0, averageOrderValue: 0 };
+  response.json({ data: {
+    summary,
+    daily: result.daily.map((item) => ({ date: item._id, orders: item.orders, sales: item.sales })),
+    statuses: Object.fromEntries(result.statuses.map((item) => [item._id, item.count])),
+  } });
+}
+
 export async function listCustomerOrders(request, response) {
   const orders = await Order.find({ customerUid: request.customer.firebase.uid }).sort({ createdAtTimestamp: -1 }).lean();
   response.json({ data: orders });

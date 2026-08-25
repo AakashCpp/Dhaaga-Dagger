@@ -24,7 +24,7 @@ export function useStorefrontController() {
     void backendApi.products().then((response) => {
       if (active && response.data.length) dispatch(replaceCatalog(response.data));
     }).catch(() => undefined);
-    const socket = io(SOCKET_ORIGIN, { transports: ["websocket", "polling"], reconnection: true });
+    const socket = io(SOCKET_ORIGIN, { transports: ["polling", "websocket"], reconnection: true });
     socket.on("catalog:updated", (event: { action: "created" | "updated" | "deleted"; product?: StoreProduct; productId?: number }) => {
       const current = store.getState().catalog;
       if (event.action === "deleted" && event.productId) dispatch(replaceCatalog(current.filter((item) => item.id !== event.productId)));

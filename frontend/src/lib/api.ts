@@ -30,6 +30,11 @@ function adminRequest<T>(path: string, options?: RequestInit) {
 }
 
 export type AdminNotification = { _id: string; type: "order" | "product" | "system"; title: string; message: string; actor: string; orderId?: string; read: boolean; createdAt: string };
+export type AdminAnalytics = {
+  summary: { totalOrders: number; grossSales: number; inFulfilment: number; averageOrderValue: number };
+  daily: Array<{ date: string; orders: number; sales: number }>;
+  statuses: Partial<Record<OrderStatus, number>>;
+};
 export type CustomerStateResponse = { profile: CustomerState["profile"]; likedIds: number[]; cart: StoreLine[]; checkout: CheckoutDraft; purchases: PurchaseRecord[]; orders: AdminOrder[] };
 const cartPayload = (lines: StoreLine[]) => ({ items: lines.map((line) => ({ productId: line.id, size: line.size, quantity: line.quantity })) });
 
@@ -54,6 +59,7 @@ export const backendApi = {
   deleteProduct: (id: number) => adminRequest<void>(`/admin/products/${id}`, { method: "DELETE" }),
   updateOrderStatus: (id: string, status: OrderStatus) => adminRequest<{ data: AdminOrder }>(`/orders/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
   orders: () => adminRequest<{ data: AdminOrder[] }>("/orders"),
+  orderAnalytics: (days = 7) => adminRequest<{ data: AdminAnalytics }>(`/orders/analytics?days=${days}`),
   notifications: (limit = 20) => adminRequest<{ data: AdminNotification[] }>(`/notifications?limit=${limit}`),
   markNotificationRead: (id: string) => adminRequest<{ data: AdminNotification }>(`/notifications/${id}/read`, { method: "PATCH" }),
   markAllNotificationsRead: () => adminRequest<void>("/notifications/read-all", { method: "PATCH" }),

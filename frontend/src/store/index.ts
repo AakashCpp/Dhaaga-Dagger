@@ -46,6 +46,7 @@ type AuthState = {
 };
 
 const defaultAuth: AuthState = { status: "loading", user: null, error: null };
+const guestAuth: AuthState = { status: "guest", user: null, error: null };
 
 const defaultCheckout: CheckoutDraft = {
   phone: "",
@@ -179,7 +180,7 @@ const authSlice = createSlice({
       state.status = "error";
       state.error = action.payload;
     },
-    signedOut: () => defaultAuth,
+    signedOut: () => guestAuth,
   },
 });
 

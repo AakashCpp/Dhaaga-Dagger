@@ -12,6 +12,8 @@ export type AdminOrder = {
   state?: string;
   landmark?: string;
   createdAt: string;
+  createdAtTimestamp?: string;
+  updatedAtTimestamp?: string;
   status: OrderStatus;
   payment: "COD" | "UPI" | "Card";
   discount?: number;

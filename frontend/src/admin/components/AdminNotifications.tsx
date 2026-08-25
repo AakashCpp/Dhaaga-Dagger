@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import { addOrder, hydrateOrders, replaceCatalog, updateOrderStatus } from "../../store";
 import { useAppDispatch } from "../../store/hooks";
 import { backendApi, SOCKET_ORIGIN } from "../../lib/api";
-import type { AdminNotification } from "../../lib/api";
+import type { AdminAnalytics, AdminNotification } from "../../lib/api";
 import type { AdminOrder } from "../types";
 import { getAdminToken } from "../adminSession";
 import { useAdminNavigation } from "./AdminNavigation";
@@ -15,6 +15,9 @@ type NotificationContextValue = {
   unreadCount: number;
   connected: boolean;
   loading: boolean;
+  analytics: AdminAnalytics | null;
+  lastSyncedAt: Date | null;
+  syncError: string | null;
   markRead: (id: string) => void;
   markAllRead: () => void;
 };
@@ -35,19 +38,26 @@ export function AdminNotificationsProvider({ children }: { children: ReactNode }
   const [notifications, setNotifications] = useState<AdminNotification[]>([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
-      const [notificationResponse, orderResponse, productResponse] = await Promise.all([
+      const [notificationResponse, orderResponse, productResponse, analyticsResponse] = await Promise.all([
         backendApi.notifications(30),
         backendApi.orders(),
         backendApi.adminProducts(),
+        backendApi.orderAnalytics(7),
       ]);
       setNotifications((current) => mergeNotifications(current, notificationResponse.data));
       dispatch(hydrateOrders(orderResponse.data));
       dispatch(replaceCatalog(productResponse.data));
-    } catch {
-      // Local UI remains usable while the backend or MongoDB is starting.
+      setAnalytics(analyticsResponse.data);
+      setLastSyncedAt(new Date());
+      setSyncError(null);
+    } catch (error) {
+      setSyncError(error instanceof Error ? error.message : "Store data is temporarily unavailable");
     } finally {
       setLoading(false);
     }
@@ -56,14 +66,14 @@ export function AdminNotificationsProvider({ children }: { children: ReactNode }
   useEffect(() => {
     void refresh();
     const poll = window.setInterval(refresh, 30_000);
-    const socket = io(SOCKET_ORIGIN, { auth: { token: getAdminToken() }, transports: ["websocket", "polling"], reconnection: true });
+    const socket = io(SOCKET_ORIGIN, { auth: { token: getAdminToken() }, transports: ["polling", "websocket"], reconnection: true });
     socket.on("connect", () => setConnected(true));
     socket.on("disconnect", () => setConnected(false));
     socket.on("notification:new", (notification: AdminNotification) => {
       setNotifications((current) => mergeNotifications(current, [notification]));
     });
-    socket.on("order:created", (order: AdminOrder) => dispatch(addOrder(order)));
-    socket.on("order:updated", (order: AdminOrder) => dispatch(updateOrderStatus({ id: order.id, status: order.status, at: order.history.at(-1)?.at || order.createdAt })));
+    socket.on("order:created", (order: AdminOrder) => { dispatch(addOrder(order)); void refresh(); });
+    socket.on("order:updated", (order: AdminOrder) => { dispatch(updateOrderStatus({ id: order.id, status: order.status, at: order.history.at(-1)?.at || order.createdAt })); void refresh(); });
     return () => {
       window.clearInterval(poll);
       socket.disconnect();
@@ -85,9 +95,12 @@ export function AdminNotificationsProvider({ children }: { children: ReactNode }
     unreadCount: notifications.filter((item) => !item.read).length,
     connected,
     loading,
+    analytics,
+    lastSyncedAt,
+    syncError,
     markRead,
     markAllRead,
-  }), [connected, loading, markAllRead, markRead, notifications]);
+  }), [analytics, connected, lastSyncedAt, loading, markAllRead, markRead, notifications, syncError]);
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 }
