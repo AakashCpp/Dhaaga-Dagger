@@ -5,7 +5,7 @@ import { addCartLine, addOrder, addPurchaseRecord, clearCart, removeCartLine, re
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { storeProducts } from "../storefront/data";
 import type { StoreActions, StoreProduct } from "../storefront/types";
-import { backendApi, SOCKET_ORIGIN } from "../lib/api";
+import { backendApi, REALTIME_ENABLED, SOCKET_ORIGIN } from "../lib/api";
 import type { AdminOrder } from "../admin/types";
 import { clearOrderVerification } from "../auth/orderVerificationSession";
 
@@ -24,6 +24,7 @@ export function useStorefrontController() {
     void backendApi.products().then((response) => {
       if (active && response.data.length) dispatch(replaceCatalog(response.data));
     }).catch(() => undefined);
+    if (!REALTIME_ENABLED) return () => { active = false; };
     const socket = io(SOCKET_ORIGIN, { transports: ["polling", "websocket"], reconnection: true });
     socket.on("catalog:updated", (event: { action: "created" | "updated" | "deleted"; product?: StoreProduct; productId?: number }) => {
       const current = store.getState().catalog;

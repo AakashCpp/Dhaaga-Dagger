@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { io } from "socket.io-client";
 import { addOrder, hydrateOrders, replaceCatalog, updateOrderStatus } from "../../store";
 import { useAppDispatch } from "../../store/hooks";
-import { backendApi, SOCKET_ORIGIN } from "../../lib/api";
+import { backendApi, REALTIME_ENABLED, SOCKET_ORIGIN } from "../../lib/api";
 import type { AdminAnalytics, AdminNotification } from "../../lib/api";
 import type { AdminOrder } from "../types";
 import { getAdminToken } from "../adminSession";
@@ -66,6 +66,7 @@ export function AdminNotificationsProvider({ children }: { children: ReactNode }
   useEffect(() => {
     void refresh();
     const poll = window.setInterval(refresh, 30_000);
+    if (!REALTIME_ENABLED) return () => window.clearInterval(poll);
     const socket = io(SOCKET_ORIGIN, { auth: { token: getAdminToken() }, transports: ["polling", "websocket"], reconnection: true });
     socket.on("connect", () => setConnected(true));
     socket.on("disconnect", () => setConnected(false));

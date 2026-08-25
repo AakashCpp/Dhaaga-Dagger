@@ -7,6 +7,9 @@ import { getOrderVerificationToken } from "../auth/orderVerificationSession";
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1").replace(/\/$/, "");
 export const SOCKET_ORIGIN = (import.meta.env.VITE_SOCKET_URL || "http://localhost:5000").replace(/\/$/, "");
+export const REALTIME_ENABLED = import.meta.env.VITE_ENABLE_REALTIME
+  ? import.meta.env.VITE_ENABLE_REALTIME === "true"
+  : !import.meta.env.PROD;
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_ORIGIN}${path}`, { ...options, headers: { "Content-Type": "application/json", ...options?.headers } });
