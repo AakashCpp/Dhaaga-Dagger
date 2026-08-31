@@ -12,11 +12,11 @@ import { CraftRoute } from "../components/CraftRoute";
 import { ProductTile } from "../components/ProductTile";
 import { StoreFooter } from "../components/StoreFooter";
 
-const fitNotes = [
-  "Close through the leg",
-  "Easy everyday balance",
-  "Clean tapered shape",
-  "Relaxed room to move",
+const fitGuide = [
+  { fit: "Straight fit", note: "Clean line from hip to hem" },
+  { fit: "Wide leg", note: "Volume with an easy fall" },
+  { fit: "Bootcut", note: "Subtle flare below the knee" },
+  { fit: "Baggy fit", note: "Maximum room to move" },
 ];
 
 export function LandingPage({
@@ -28,19 +28,10 @@ export function LandingPage({
 }) {
   const products = actions.products.filter((item) => item.active !== false);
   const jeans = products.filter((item) => item.category === "Jeans");
-  const henleys = products.filter((item) => item.category === "Henley");
-  const balancedProducts = [
-    jeans[0],
-    henleys[0],
-    jeans[1],
-    henleys[1],
-    jeans[2],
-    henleys[2],
-  ].filter(Boolean) as StoreProduct[];
+  const balancedProducts = jeans.slice(0, 1) as StoreProduct[];
   const carouselProducts = balancedProducts.length
     ? balancedProducts
     : products;
-  const henleyFeature = henleys[0];
   const heroProduct = jeans[0] || products[0];
   const [active, setActive] = useState(0);
   const slideCount = Math.max(Math.min(carouselProducts.length, 6), 1);
@@ -77,32 +68,33 @@ export function LandingPage({
           className="editorial-hero-media editorial-product-shot"
           onClick={() => actions.openProduct(heroProduct)}
         >
-          <img src={heroProduct.image} alt={heroProduct.name} />
+          <img src="/assets/campaign-wide-leg-hero.png" alt="Model wearing a black Henley with pale wide-leg denim" />
           <span>
-            <small>New season / 01</small>
+            <small>Sample release / 01</small>
             <strong>{heroProduct.name}</strong>
           </span>
           <ArrowUpRight />
         </button>
 
         <div className="editorial-hero-copy">
-          <p className="eyebrow">Denim & Henleys / one daily uniform</p>
+          <p className="eyebrow">One sample / one clear direction</p>
           <h1>
             Dhaaga <span>& Dagger</span>
           </h1>
           <p>
-            Denim with structure. Henleys with honest texture. Built together
-            for the way every day actually moves.
+            One exaggerated wide-leg jean, styled with clean long-sleeve
+            Henleys. A focused sample of where Dhaaga & Dagger is going.
           </p>
           <button className="primary" onClick={() => go("products")}>
-            Shop the collection <ArrowDownRight size={14} />
+            View the sample <ArrowDownRight size={14} />
           </button>
           <div className="editorial-proof">
             <span>
               <b>13.5 oz</b> ring-spun cloth
             </span>
             <span>
-              <b>30 days</b> fit exchange
+              <b>12 days</b> easy return
+              <small className="return-review-note">No size or measurement difference is accepted. Every return is strictly reviewed by the vendor.</small>
             </span>
           </div>
         </div>
@@ -112,12 +104,12 @@ export function LandingPage({
           onClick={() => go("craft")}
         >
           <img
-            src="/assets/landing-uniform-henley-denim.webp"
-            alt="Two men wearing indigo and ecru Henleys with denim"
+            src="/assets/wide-leg-001-front.png"
+            alt="Model wearing a white Henley with pale wide-leg denim"
           />
           <span>
-            <small>One complete uniform</small>
-            <strong>Denim meets Henley</strong>
+            <small>The styling language</small>
+            <strong>Wide denim / clean Henley</strong>
           </span>
           <ArrowUpRight />
         </button>
@@ -131,14 +123,14 @@ export function LandingPage({
           <div>
             <p className="eyebrow">Build the uniform</p>
             <h2 id="category-heading">
-              Two garments.
+              One sample.
               <br />
-              One clear point of view.
+              Four future fits.
             </h2>
           </div>
           <p>
-            Start with the structure of denim, add the tactile ease of a Henley,
-            then look closer at how both are made.
+            The wide-leg sample is live now. Straight, bootcut and baggy
+            silhouettes define the wider fit direction.
           </p>
         </header>
         <div className="editorial-category-grid">
@@ -147,8 +139,8 @@ export function LandingPage({
             onClick={() => go("products")}
           >
             <span>01 / Denim</span>
-            <strong>Premium jeans</strong>
-            <small>Four considered fits</small>
+            <strong>Wide Leg 001</strong>
+            <small>Our only shoppable sample</small>
             <ArrowUpRight />
           </button>
           <button
@@ -156,8 +148,8 @@ export function LandingPage({
             onClick={() => go("products")}
           >
             <span>02 / Henleys</span>
-            <strong>Textured layers</strong>
-            <small>Six everyday essentials</small>
+            <strong>Henley styling</strong>
+            <small>The top half of the visual language</small>
             <ArrowUpRight />
           </button>
           <button
@@ -172,21 +164,35 @@ export function LandingPage({
         </div>
       </section>
 
-      <section className="henley-arrival">
+      <motion.section
+        className="henley-arrival"
+        initial={{ opacity: 0, y: 34 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
         <button
           className="henley-arrival-media"
           onClick={() =>
-            henleyFeature ? actions.openProduct(henleyFeature) : go("products")
+            actions.openProduct(heroProduct)
           }
         >
-          <img
-            src="/assets/henley-editorial.webp"
-            alt="Deep indigo Henley paired with raw denim"
+          <motion.img
+            src="/assets/henley-duo-editorial.png"
+            alt="Two models wearing ecru and oxblood Henleys with wide-leg denim"
             loading="eager"
+            whileHover={{ scale: 1.025 }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           />
-          <span>New category / Henley 001</span>
+          <span>Styling study / Henley</span>
         </button>
-        <div className="henley-arrival-copy">
+        <motion.div
+          className="henley-arrival-copy"
+          initial={{ opacity: 0, x: 28 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.65, delay: 0.12 }}
+        >
           <p className="eyebrow">The other half of the uniform</p>
           <h2>
             Henley
@@ -201,18 +207,39 @@ export function LandingPage({
             <button
               className="primary"
               onClick={() =>
-                henleyFeature
-                  ? actions.openProduct(henleyFeature)
-                  : go("products")
+                actions.openProduct(heroProduct)
               }
             >
-              Meet the Henley <ArrowDownRight size={14} />
+              View the styled sample <ArrowDownRight size={14} />
             </button>
             <button onClick={() => go("craft")}>
               See how it is made <ArrowUpRight size={14} />
             </button>
           </div>
-        </div>
+        </motion.div>
+      </motion.section>
+
+      <section className="henley-visual-story" aria-label="Henley colour and construction story">
+        <motion.figure
+          className="henley-palette-panel"
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.65 }}
+        >
+          <img src="/assets/henley-palette-flatlay.png" alt="Ecru, oxblood, white and black Henleys arranged with pale denim" loading="lazy" decoding="async" />
+          <figcaption><span>01 / Palette</span><strong>Four quiet tones.</strong><small>Ecru · Oxblood · White · Black</small></figcaption>
+        </motion.figure>
+        <motion.figure
+          className="henley-material-panel"
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.65, delay: 0.12 }}
+        >
+          <img src="/assets/henley-material-study.png" alt="Henley placket, cotton slub, cuff and denim material study" loading="lazy" decoding="async" />
+          <figcaption><span>02 / Material index</span><strong>Texture, measured.</strong><button onClick={() => go("craft")}>Read the construction <ArrowUpRight size={14} /></button></figcaption>
+        </motion.figure>
       </section>
 
       <section
@@ -293,9 +320,9 @@ export function LandingPage({
 
       <section className="signal-strip">
         <span>13.5 oz ring-spun denim</span>
-        <span>Breathable cotton-slub Henleys</span>
+        <span>Styled with long-sleeve Henleys</span>
         <span>Free delivery across India</span>
-        <span>30-day fit exchange</span>
+        <span>12-day return window</span>
       </section>
 
       <section className="fit-editorial">
@@ -307,16 +334,16 @@ export function LandingPage({
             everyday fit.
           </h2>
           <p>
-            Four considered silhouettes, each shaped around a different way of
-            moving.
+            Four silhouettes shape our denim language. Wide Leg 001 is the
+            single sample available today.
           </p>
         </div>
         <div className="fit-rail">
-          {jeans.slice(0, 4).map((item, index) => (
-            <button key={item.id} onClick={() => actions.openProduct(item)}>
+          {fitGuide.map((item, index) => (
+            <button key={item.fit} onClick={() => actions.openProduct(heroProduct)}>
               <span>0{index + 1}</span>
               <strong>{item.fit}</strong>
-              <small>{fitNotes[index]}</small>
+              <small>{item.note}</small>
               <ArrowDownRight />
             </button>
           ))}
@@ -349,14 +376,14 @@ export function LandingPage({
         <div className="section-title">
           <div>
             <p className="eyebrow">The current edit</p>
-            <h2>Everyday signatures</h2>
+            <h2>The sample, three ways</h2>
           </div>
           <button onClick={() => go("products")}>
             View all <ChevronRight size={15} />
           </button>
         </div>
         <div className="collection-grid landing-products">
-          {carouselProducts.slice(0, 4).map((item, index) => (
+          {carouselProducts.slice(0, 1).map((item, index) => (
             <ProductTile
               key={item.id}
               product={item}
@@ -369,8 +396,8 @@ export function LandingPage({
 
       <section className="landing-anatomy">
         <img
-          src="/assets/denim-anatomy.jpg"
-          alt="Denim front back and interior views"
+          src="/assets/campaign-wide-leg-hero.png"
+          alt="Wide-leg denim and black Henley editorial campaign"
           loading="lazy"
           decoding="async"
         />

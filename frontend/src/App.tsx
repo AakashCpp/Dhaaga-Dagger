@@ -97,10 +97,6 @@ export default function App() {
     if (next === "products") setCollectionCategory("All");
     go(next);
   }, [auth.status, auth.user?.uid, go]);
-  const openCollection = useCallback((category: "All" | "Jeans" | "Henley") => {
-    setCollectionCategory(category);
-    go("products");
-  }, [go]);
 
   useEffect(() => {
     if (!protectedStorefrontPages.has(page as StorePage) || auth.status === "loading" || auth.status === "authenticated") return;
@@ -147,7 +143,7 @@ export default function App() {
   return <>
     {isStorefront && page !== "auth" && <StoreNav page={page as StorePage} cartCount={cartCount} likedCount={actions.liked.size} go={storefrontGo} />}
 
-    {page === "home" && <LandingPage go={storefrontGo} openCollection={openCollection} actions={actions} />}
+    {page === "home" && <LandingPage go={storefrontGo} actions={actions} />}
     {page === "products" && <CollectionPage key={collectionCategory} actions={actions} initialCategory={collectionCategory} />}
     {page === "craft" && <CraftPage go={storefrontGo} />}
     {page === "wishlist" && <WishlistPage go={storefrontGo} actions={actions} />}

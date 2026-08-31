@@ -16,9 +16,9 @@ function normalizedProduct(product: StoreProduct): StoreProduct {
 const emptyProduct = (): StoreProduct => ({
   id: Date.now(),
   category: "Jeans",
-  subtype: "Regular",
+  subtype: "Straight fit",
   name: "",
-  fit: "Regular",
+  fit: "Straight fit",
   price: 1299,
   color: "#274c77",
   image: "",
@@ -36,7 +36,7 @@ export function ProductEditorPage({ product, go, saveProduct, deleteProduct }: {
   const [saveError, setSaveError] = useState("");
   useEffect(() => setDraft(product ? normalizedProduct(product) : emptyProduct()), [product]);
   const images = (draft.gallery || []).filter(Boolean).slice(0, 6);
-  const subtypeOptions = draft.category === "Jeans" ? ["Slim", "Regular", "Skinny", "Relaxed"] : ["Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"];
+  const subtypeOptions = draft.category === "Jeans" ? ["Straight fit", "Wide leg", "Bootcut", "Baggy fit"] : ["Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"];
   const updateImages = (gallery: string[]) => setDraft((current) => ({ ...current, gallery, image: gallery[0] || "" }));
   const valid = Boolean(draft.name.trim() && draft.price > 0 && draft.sizes.length && images.length);
   const save = async () => {
@@ -63,7 +63,7 @@ export function ProductEditorPage({ product, go, saveProduct, deleteProduct }: {
         <div className="editor-fields">
           <label className="wide">Product name<input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} placeholder="Raw Indigo Wide" /></label>
           <label>SKU<input value={draft.sku || ""} onChange={(event) => setDraft({ ...draft, sku: event.target.value })} /></label>
-          <label>Category<UiSelect value={draft.category} options={["Jeans", "Henley"]} onChange={(value) => { const category = value as StoreProduct["category"]; const subtype = category === "Jeans" ? "Regular" : "Classic Slub"; setDraft({ ...draft, category, subtype, fit: "Regular", sizes: [] }); }} ariaLabel="Select garment category" /></label>
+          <label>Category<UiSelect value={draft.category} options={["Jeans", "Henley"]} onChange={(value) => { const category = value as StoreProduct["category"]; const subtype = category === "Jeans" ? "Straight fit" : "Classic Slub"; setDraft({ ...draft, category, subtype, fit: category === "Jeans" ? "Straight fit" : "Regular", sizes: [] }); }} ariaLabel="Select garment category" /></label>
           <label>{draft.category === "Jeans" ? "Jeans fit" : "Henley style"}<UiSelect value={draft.subtype} options={subtypeOptions} onChange={(subtype) => setDraft({ ...draft, subtype, fit: draft.category === "Jeans" ? subtype : draft.fit })} ariaLabel={`Select ${draft.category} style`} /></label>
           <label>Price (Rs.)<input type="number" min="0" value={draft.price} onChange={(event) => setDraft({ ...draft, price: Number(event.target.value) })} /></label>
           <label>Available stock<input type="number" min="0" value={draft.stock || 0} onChange={(event) => setDraft({ ...draft, stock: Number(event.target.value) })} /></label>

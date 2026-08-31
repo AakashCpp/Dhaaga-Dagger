@@ -5,14 +5,16 @@ import { Product } from "../src/models/Product.js";
 
 test("product input requires managed catalog fields", () => {
   const result = productPayload.safeParse({
-    name: "Raw Indigo Slim",
-    fit: "Slim",
-    price: 1299,
-    color: "#274c77",
-    image: "/assets/jean-raw-indigo.jpg",
-    gallery: ["/assets/jean-raw-indigo.jpg"],
+    category: "Jeans",
+    subtype: "Wide leg",
+    name: "Wide Leg 001",
+    fit: "Wide leg",
+    price: 1499,
+    color: "#b7cad8",
+    image: "/assets/wide-leg-001-front.png",
+    gallery: ["/assets/wide-leg-001-front.png"],
     sizes: ["30", "32"],
-    sku: "DK-0001",
+    sku: "DD-WL-0001",
     stock: 20,
     active: true,
   });
@@ -41,7 +43,7 @@ test("product model rejects a subtype from another category", async () => {
   const product = new Product({
     id: 999,
     category: "Henley",
-    subtype: "Slim",
+    subtype: "Wide leg",
     name: "Invalid Henley",
     fit: "Regular",
     price: 1499,

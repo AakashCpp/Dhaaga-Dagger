@@ -22,7 +22,8 @@ export function useStorefrontController() {
   useEffect(() => {
     let active = true;
     void backendApi.products().then((response) => {
-      if (active && response.data.length) dispatch(replaceCatalog(response.data));
+      const sample = response.data.filter((product) => product.sku === "DD-WL-0001");
+      if (active && sample.length) dispatch(replaceCatalog(sample.slice(0, 1)));
     }).catch(() => undefined);
     if (!REALTIME_ENABLED) return () => { active = false; };
     const socket = io(SOCKET_ORIGIN, { transports: ["polling", "websocket"], reconnection: true });

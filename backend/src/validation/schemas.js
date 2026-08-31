@@ -5,9 +5,9 @@ const orderIdParam = z.object({ id: z.string().trim().min(4).max(40) });
 
 export const productPayload = z.object({
   category: z.enum(["Jeans", "Henley"]).default("Jeans"),
-  subtype: z.enum(["Slim", "Regular", "Skinny", "Relaxed", "Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"]).default("Regular"),
+  subtype: z.enum(["Straight fit", "Wide leg", "Bootcut", "Baggy fit", "Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"]).default("Straight fit"),
   name: z.string().trim().min(2).max(120),
-  fit: z.enum(["Slim", "Regular", "Skinny", "Relaxed"]).optional(),
+  fit: z.enum(["Straight fit", "Wide leg", "Bootcut", "Baggy fit", "Regular"]).optional(),
   price: z.coerce.number().nonnegative().max(1_000_000),
   color: z.string().regex(/^#[0-9a-f]{6}$/i),
   image: z.string().min(1).max(2_000_000),

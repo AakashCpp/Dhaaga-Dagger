@@ -1,7 +1,7 @@
 import { storeProducts } from "../storefront/data";
 import type { StoreProduct } from "../storefront/types";
 
-const CATALOG_KEY = "denimkart.catalog.v1";
+const CATALOG_KEY = "dhaaga.catalog.single-product.v2";
 const optimizedAssets = new Set(["jean-raw-indigo", "jean-washed-black", "jean-stone-blue", "jean-cloud-blue", "denim-anatomy", "denim-construction-macros"]);
 
 function optimizeKnownAsset(url: string) {
@@ -10,7 +10,7 @@ function optimizeKnownAsset(url: string) {
 }
 
 function migrateLocalAssets(products: StoreProduct[]) {
-  return products.map((product) => ({ ...product, category: product.category || "Jeans", subtype: product.subtype || product.fit || "Regular", image: optimizeKnownAsset(product.image), gallery: product.gallery?.map(optimizeKnownAsset) }));
+  return products.map((product) => ({ ...product, category: product.category || "Jeans", subtype: product.subtype || product.fit || "Straight fit", image: optimizeKnownAsset(product.image), gallery: product.gallery?.map(optimizeKnownAsset) }));
 }
 
 export interface CatalogRepository {

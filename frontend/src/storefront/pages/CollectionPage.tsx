@@ -5,8 +5,8 @@ import type { StoreActions, StoreProduct } from "../types";
 import { ProductTile } from "../components/ProductTile";
 
 const subtypeOptions = {
-  All: ["All styles", "Slim", "Regular", "Skinny", "Relaxed", "Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"],
-  Jeans: ["All styles", "Slim", "Regular", "Skinny", "Relaxed"],
+  All: ["All styles", "Straight fit", "Wide leg", "Bootcut", "Baggy fit", "Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"],
+  Jeans: ["All styles", "Straight fit", "Wide leg", "Bootcut", "Baggy fit"],
   Henley: ["All styles", "Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"],
 };
 
@@ -50,7 +50,7 @@ export function CollectionPage({ actions, initialCategory = "All" }: { actions: 
   };
 
   return <main className="collection-page">
-    <header className="collection-hero"><p className="eyebrow">The collection / {activeProducts.length} pieces</p><h1>Built as one<br /><em>daily uniform.</em></h1><p>Denim structure meets the tactile ease of the Henley.</p></header>
+    <header className="collection-hero"><p className="eyebrow">The sample / {activeProducts.length} piece</p><h1>One shape.<br /><em>All the focus.</em></h1><p>Wide-leg denim, styled through the clean ease of the Henley.</p></header>
     <section className="filter-studio refined-filters garment-filters collection-all-filters" aria-label="Filter the collection">
       <label><span>Category</span><UiSelect value={category} options={categoryOptions} onChange={chooseCategory} ariaLabel="Filter products by category" /></label>
       <label><span>Style</span><UiSelect value={subtype} options={subtypeOptions[category]} onChange={setSubtype} ariaLabel="Filter by garment style" /></label>
@@ -58,7 +58,7 @@ export function CollectionPage({ actions, initialCategory = "All" }: { actions: 
       <label><span>Sort by</span><UiSelect value={sort} options={["Featured", "Price: low to high", "Newest first"]} onChange={setSort} ariaLabel="Sort products" /></label>
       <button className="reset-filter" onClick={reset}><RotateCcw size={14} /> Reset</button>
     </section>
-    <div className="collection-meta"><span>{items.length} styles available</span><span>Jeans and Henleys / designed to work together</span></div>
+    <div className="collection-meta"><span>{items.length} sample available</span><span>Wide denim / Henley styling / one focused release</span></div>
     {items.length ? <section className="collection-grid">{items.map((item, index) => <ProductTile key={item.id} product={item} index={index} {...actions} />)}</section> : <section className="collection-empty"><p className="eyebrow">No exact match</p><h2>Try another style or size.</h2><button onClick={reset}>Reset filters</button></section>}
   </main>;
 }

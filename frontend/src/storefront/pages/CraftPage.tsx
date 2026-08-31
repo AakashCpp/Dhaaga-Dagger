@@ -35,7 +35,7 @@ export function CraftPage({ go }: { go: (page: StorePage) => void }) {
       </section>
 
       <section className="henley-craft-chapter">
-        <div className="henley-craft-image henley-craft-gallery"><img src="/assets/henley-craft-macro.webp" alt="Close view of the reinforced three-button Henley placket" loading="lazy" decoding="async" /><img src="/assets/henley-indigo-waffle.webp" alt="Indigo waffle Henley showing the complete garment texture" loading="lazy" decoding="async" /><span>Story 002 / Henley</span></div>
+        <div className="henley-craft-image henley-craft-gallery"><img src="/assets/henley-material-study.png" alt="Close material study of the reinforced three-button Henley placket, cotton slub and denim" loading="lazy" decoding="async" /><img src="/assets/henley-palette-flatlay.png" alt="Ecru, oxblood, white and black Henleys arranged as a palette study" loading="lazy" decoding="async" /><span>Story 002 / Henley</span></div>
         <div className="henley-craft-copy"><p className="eyebrow">The placket / three points of restraint</p><h2>Soft cloth.<br /><em>Held with intent.</em></h2><p>The Henley begins with breathable cotton slub, then earns its structure through a bound neckline, a reinforced placket and seams designed to sit cleanly beneath a jacket—or stand on their own.</p><div className="henley-craft-notes"><article><b>100%</b><span>Cotton slub</span></article><article><b>3</b><span>Anchored buttons</span></article><article><b>2×</b><span>Shoulder binding</span></article></div><button className="primary" onClick={() => go("products")}>Explore Henleys <ArrowDownRight size={14} /></button></div>
       </section>
 

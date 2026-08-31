@@ -5,11 +5,11 @@ import { createNotification } from "../services/notification.service.js";
 
 function cleanProduct(product) {
   const { _id, deletedAt, ...clean } = product;
-  return { ...clean, category: clean.category || "Jeans", subtype: clean.subtype || clean.fit || "Regular" };
+  return { ...clean, category: clean.category || "Jeans", subtype: clean.subtype || clean.fit || "Straight fit" };
 }
 
 const styles = {
-  Jeans: ["Slim", "Regular", "Skinny", "Relaxed"],
+  Jeans: ["Straight fit", "Wide leg", "Bootcut", "Baggy fit"],
   Henley: ["Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"],
 };
 

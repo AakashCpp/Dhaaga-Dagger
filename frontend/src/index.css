@@ -1179,6 +1179,19 @@ h1, h2, h3, h4, p, span, a, button, input, select, label, small, strong, b { let
 .preview-sizes span { min-width: 34px; height: 32px; display: grid; place-items: center; border: 1px solid var(--dk-line); border-radius: 3px; font-size: 8px; }
 .product-editor-preview > small { display: flex; gap: 7px; color: #758a96; font-size: 7px; line-height: 1.5; }
 .product-editor-preview > small svg { width: 13px; color: var(--dk-accent); }
+
+/* Focused single-sample catalog */
+.landing-products,
+.collection-page > .collection-grid {
+  grid-template-columns: minmax(280px, 430px);
+}
+.landing-products .product-visual { aspect-ratio: .8; }
+.collection-page > .collection-grid { padding-bottom: 110px; }
+
+@media (max-width: 560px) {
+  .landing-products,
+  .collection-page > .collection-grid { grid-template-columns: 1fr; }
+}
 .admin-danger-button { width: 100%; min-height: 42px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; border: 1px solid rgba(224, 107, 107, .3); border-radius: 4px; background: rgba(224, 107, 107, .06); color: #eb9a9a; font-size: 8px; font-weight: 700; text-transform: uppercase; }
 .admin-danger-button svg { width: 14px; }
 
@@ -1782,7 +1795,7 @@ img, video { max-width: 100%; }
   background:
     linear-gradient(90deg, rgba(244,240,232,.08), rgba(244,240,232,.34)),
     linear-gradient(0deg, rgba(244,240,232,.98) 0%, rgba(244,240,232,.16) 56%, rgba(244,240,232,.04) 100%),
-    url('/assets/landing-uniform-henley-denim.webp') center / cover no-repeat;
+    url('/assets/henley-duo-editorial.png') center / cover no-repeat;
 }
 .auth-visual::after { z-index: -1; background: linear-gradient(115deg, rgba(146,47,36,.08), transparent 45%); }
 .auth-visual > .brand { align-self: flex-start; display: block; width: 132px; padding: 9px 12px; border: 1px solid rgba(23,36,56,.18); background: rgba(252,250,245,.9); backdrop-filter: blur(8px); }
@@ -2141,9 +2154,9 @@ h1 em, h2 em, h3 em { font-style: normal !important; }
 .category-panel:hover::before { background: linear-gradient(90deg, rgba(114, 35, 27, .88), rgba(13, 24, 39, .28)); }
 .category-panel:hover::after { inset: 8px; border-color: rgba(255,255,255,.52); }
 .category-panel:hover svg { transform: translate(4px, -4px); }
-.category-premium { background-image: url('/assets/denim-construction-macros.jpg'); background-position: 15% center; }
-.category-craft { background-image: url('/assets/brand/dhaaga-dagger-banner.jpeg'); background-position: 75% center; }
-.category-fit { background-image: url('/assets/denim-anatomy.jpg'); background-position: 72% center; }
+.category-premium { background-image: url('/assets/wide-leg-001-front.png'); background-position: center 64%; }
+.category-craft { background-image: url('/assets/wide-leg-001-editorial.png'); background-position: center 38%; }
+.category-fit { background-image: url('/assets/campaign-wide-leg-hero.png'); background-position: 76% center; }
 
 .signal-strip { min-height: 58px; background: var(--ink); color: #dcd7ce; }
 .signal-strip span + span { border-left-color: rgba(244,240,232,.18); }
@@ -3650,7 +3663,7 @@ body { min-width: 280px; overflow-x: clip; }
 .story-prologue > img { width: 100%; height: 100%; min-height: 520px; display: block; object-fit: cover; object-position: center; }
 
 .auth-page { grid-template-columns: minmax(0, 1.12fr) minmax(430px, .88fr); background: var(--paper); color: var(--ink); }
-.auth-visual { min-height: 100svh; justify-content: space-between; padding: clamp(28px, 4.5vw, 68px); background: linear-gradient(90deg, rgba(244,240,232,.08), rgba(244,240,232,.34)), linear-gradient(0deg, rgba(244,240,232,.98) 0%, rgba(244,240,232,.16) 56%, rgba(244,240,232,.04) 100%), url('/assets/landing-uniform-henley-denim.webp') center / cover no-repeat; }
+.auth-visual { min-height: 100svh; justify-content: space-between; padding: clamp(28px, 4.5vw, 68px); background: linear-gradient(90deg, rgba(244,240,232,.08), rgba(244,240,232,.34)), linear-gradient(0deg, rgba(244,240,232,.98) 0%, rgba(244,240,232,.16) 56%, rgba(244,240,232,.04) 100%), url('/assets/henley-duo-editorial.png') center / cover no-repeat; }
 .auth-visual::after { z-index: -1; background: linear-gradient(115deg, rgba(146,47,36,.08), transparent 45%); }
 .auth-visual-copy h1, .auth-visual-copy h1 em, .auth-visual-copy > p:not(.eyebrow), .auth-visual > span { text-shadow: none; }
 .auth-visual-copy h1 { color: var(--ink); }
@@ -3682,11 +3695,11 @@ body { min-width: 280px; overflow-x: clip; }
 .editorial-category-section .category-panel::before { background: linear-gradient(180deg, rgba(13,24,39,.04) 20%, rgba(13,24,39,.88) 100%); }
 .editorial-category-section .category-panel small { color: rgba(255,255,255,.82); font-size: 8px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
 .editorial-category-section .category-panel:hover { transform: translateY(-3px); }
-.category-craft { background-image: url('/assets/henley-indigo-waffle.webp'); background-position: center 22%; }
+.category-craft { background-image: url('/assets/henley-palette-flatlay.png'); background-position: center; }
 
 /* Editorial member access — calm, secure and deliberately uncluttered. */
 .auth-page { min-height: 100svh; grid-template-columns: minmax(0, 1.08fr) minmax(460px, .92fr); background: #f3efe7; }
-.auth-visual { position: sticky; top: 0; min-height: 100svh; height: 100svh; justify-content: space-between; padding: clamp(26px, 4vw, 58px); background: linear-gradient(180deg, rgba(12,22,36,.12) 20%, rgba(12,22,36,.76) 100%), url('/assets/landing-uniform-henley-denim.webp') center 35% / cover no-repeat; }
+.auth-visual { position: sticky; top: 0; min-height: 100svh; height: 100svh; justify-content: space-between; padding: clamp(26px, 4vw, 58px); background: linear-gradient(180deg, rgba(12,22,36,.12) 20%, rgba(12,22,36,.76) 100%), url('/assets/henley-duo-editorial.png') center 35% / cover no-repeat; }
 .auth-visual::before { content: ""; position: absolute; inset: 18px; z-index: -1; border: 1px solid rgba(255,255,255,.35); pointer-events: none; }
 .auth-visual-topline { max-width: none !important; display: flex; justify-content: space-between; color: rgba(255,255,255,.8); font-size: 8px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
 .auth-visual-label { width: min(590px, 100%); max-width: 590px !important; display: grid; gap: 12px; color: #fff; }
@@ -4743,4 +4756,181 @@ body,
   width: auto;
   margin-left: var(--page-gutter);
   margin-right: var(--page-gutter);
+}
+
+/* Unified storefront type and a stronger, darker masthead. */
+:root { --site-font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+body,
+body * { font-family: var(--site-font) !important; }
+
+.store-nav {
+  background: rgba(244, 239, 229, .97) !important;
+  border-bottom-color: rgba(10, 19, 34, .16) !important;
+  box-shadow: 0 10px 30px rgba(10, 19, 34, .06);
+}
+.nav-wordmark {
+  color: #17243a !important;
+  font-weight: 850 !important;
+  letter-spacing: -.035em !important;
+}
+.nav-wordmark span { color: #17243a !important; font-weight: 850 !important; }
+.nav-wordmark b { color: var(--oxblood) !important; font-weight: 850 !important; }
+.nav-wordmark { font-size: 19px !important; }
+
+/* Balanced editorial image: full portrait over a soft ambient crop. */
+.henley-arrival {
+  min-height: 620px !important;
+  grid-template-columns: minmax(0, 1.08fr) minmax(420px, .92fr) !important;
+  overflow: hidden;
+  border: 1px solid rgba(10, 19, 34, .13);
+  box-shadow: 0 26px 70px rgba(25, 31, 40, .09);
+}
+.henley-arrival-media {
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  background: #241c1d !important;
+}
+.henley-arrival-media::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -28px;
+  background: linear-gradient(rgba(20, 13, 15, .16), rgba(20, 13, 15, .28)), url('/assets/henley-duo-editorial.png') center 35% / cover;
+  filter: blur(18px) saturate(.72);
+  transform: scale(1.08);
+}
+.henley-arrival-media::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(10, 12, 17, .18), transparent 20%, transparent 80%, rgba(10, 12, 17, .2));
+}
+.henley-arrival-media img {
+  position: relative;
+  z-index: 1;
+  width: 100% !important;
+  height: 620px !important;
+  min-height: 0 !important;
+  padding: 20px 0;
+  object-fit: contain !important;
+  object-position: center !important;
+  filter: saturate(.9) contrast(1.02);
+  will-change: transform;
+}
+.henley-arrival-media span { z-index: 3 !important; }
+.henley-arrival-copy { position: relative; }
+.henley-arrival-copy::before {
+  content: "02 / STYLE STUDY";
+  position: absolute;
+  right: 32px;
+  top: 28px;
+  color: rgba(10, 19, 34, .36);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+.henley-arrival-copy h2 { font-weight: 780 !important; line-height: .9 !important; }
+.henley-arrival-copy h2 em { font-style: normal; font-weight: 420 !important; }
+
+.primary { position: relative; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
+.primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.26) 48%, transparent 66%);
+  transform: translateX(-130%);
+  transition: transform .65s ease;
+}
+.primary:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(89, 29, 23, .2); }
+.primary:hover::after { transform: translateX(130%); }
+
+.editorial-proof { align-items: start; font-size: 11px !important; }
+.editorial-proof span { min-width: 0; }
+.editorial-proof b { font-size: 16px !important; font-weight: 800 !important; }
+.return-review-note {
+  max-width: 210px;
+  margin: 7px auto 0;
+  color: #684039;
+  font-size: 9px !important;
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: .025em;
+}
+
+.henley-visual-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, .55fr);
+  gap: 10px;
+  margin: 0 var(--page-gutter) 10px;
+}
+.henley-visual-story figure {
+  position: relative;
+  min-width: 0;
+  min-height: 520px;
+  margin: 0;
+  overflow: hidden;
+  background: #241c1d;
+}
+.henley-visual-story img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform .8s cubic-bezier(.22, 1, .36, 1), filter .45s ease;
+}
+.henley-palette-panel img { object-position: center; }
+.henley-material-panel img { object-position: center; }
+.henley-visual-story figure::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 52%, rgba(9, 13, 20, .82));
+  pointer-events: none;
+}
+.henley-visual-story figure:hover img { transform: scale(1.025); filter: saturate(1.06); }
+.henley-visual-story figcaption {
+  position: absolute;
+  z-index: 2;
+  left: clamp(22px, 3vw, 42px);
+  right: clamp(22px, 3vw, 42px);
+  bottom: clamp(22px, 3vw, 38px);
+  display: grid;
+  gap: 7px;
+  color: #fff;
+}
+.henley-visual-story figcaption span,
+.henley-visual-story figcaption small { font-size: 9px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+.henley-visual-story figcaption strong { font-size: clamp(25px, 3vw, 44px); line-height: .95; letter-spacing: -.04em; }
+.henley-visual-story figcaption button {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 5px;
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.7);
+  background: transparent;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.category-craft { background-image: url('/assets/henley-palette-flatlay.png') !important; background-position: center !important; }
+.auth-visual { background-image: linear-gradient(180deg, rgba(12,22,36,.12) 20%, rgba(12,22,36,.76) 100%), url('/assets/henley-duo-editorial.png') !important; }
+
+@media (max-width: 900px) {
+  .henley-arrival { grid-template-columns: 1fr !important; min-height: 0 !important; }
+  .henley-arrival-media img { height: min(760px, 112vw) !important; }
+  .henley-arrival-copy::before { right: 22px; top: 20px; }
+  .henley-visual-story { grid-template-columns: 1fr; }
+  .henley-visual-story figure { min-height: min(560px, 90vw); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

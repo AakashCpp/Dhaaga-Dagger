@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const subtypesByCategory = {
-  Jeans: ["Slim", "Regular", "Skinny", "Relaxed"],
+  Jeans: ["Straight fit", "Wide leg", "Bootcut", "Baggy fit"],
   Henley: ["Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"],
 };
 
@@ -10,9 +10,9 @@ const productSchema = new mongoose.Schema({
   category: { type: String, enum: ["Jeans", "Henley"], required: true, default: "Jeans", index: true },
   subtype: {
     type: String,
-    enum: ["Slim", "Regular", "Skinny", "Relaxed", "Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"],
+    enum: ["Straight fit", "Wide leg", "Bootcut", "Baggy fit", "Classic Slub", "Waffle Knit", "Heavyweight Rib", "Short Sleeve"],
     required: true,
-    default: "Regular",
+    default: "Straight fit",
     index: true,
     validate: {
       validator(value) { return subtypesByCategory[this.category]?.includes(value) ?? false; },
@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema({
     },
   },
   name: { type: String, required: true, trim: true, maxlength: 120 },
-  fit: { type: String, enum: ["Slim", "Regular", "Skinny", "Relaxed"], required: true, index: true },
+  fit: { type: String, enum: ["Straight fit", "Wide leg", "Bootcut", "Baggy fit", "Regular"], required: true, index: true },
   price: { type: Number, required: true, min: 0 },
   color: { type: String, required: true, match: /^#[0-9a-f]{6}$/i },
   image: { type: String, required: true },
